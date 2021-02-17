@@ -6,13 +6,13 @@ import {
   CreateAccountOutput,
 } from './dtos/create-account.dto';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
-import { User } from './entities/user.entities';
-import { ConfigService } from '@nestjs/config';
+import { User } from './entities/user.entity';
 import { JwtService } from 'src/jwt/jwt.service';
 import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { Verification } from './entities/verification.entity';
 import { UserProfileOutput } from './dtos/user-profile.dto';
 import { VerifyEmailOutput } from './dtos/verify-email.dto';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class UsersService {
@@ -20,8 +20,8 @@ export class UsersService {
     @InjectRepository(User) private readonly users: Repository<User>,
     @InjectRepository(Verification)
     private readonly verfications: Repository<Verification>,
-    private readonly config: ConfigService,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
   async createAccount({
@@ -37,7 +37,10 @@ export class UsersService {
       const user = await this.users.save(
         this.users.create({ email, password, role }),
       );
-      await this.verfications.save(this.verfications.create({ user }));
+      const verification = await this.verfications.save(
+        this.verfications.create({ user }),
+      );
+      this.mailService.sendVerificationEmail(user.email, verification.code);
       return { ok: true };
     } catch (error) {
       return { ok: false, error: "Couldn't create account" };
@@ -65,7 +68,6 @@ export class UsersService {
           token: null,
         };
       }
-      console.log(user);
       const token = this.jwtService.sign(user.id);
       return {
         ok: true,
@@ -76,7 +78,6 @@ export class UsersService {
       return {
         ok: false,
         error: null,
-        token: null,
       };
     }
   }
@@ -90,8 +91,12 @@ export class UsersService {
           user,
         };
       }
+      return { ok: false, error: 'User does not exist' };
     } catch (error) {
-      return { ok: false, error: 'User not found' };
+      return {
+        ok: false,
+        error: 'Something went wrong, user cannot be found at this time',
+      };
     }
   }
 
@@ -104,7 +109,14 @@ export class UsersService {
       if (email) {
         user.email = email;
         user.verified = false;
-        await this.verfications.save(this.verfications.create({ user }));
+        const verification = await this.verfications.findOne({ user });
+        if (Verification) {
+          await this.verfications.delete(verification.id);
+        }
+        const verfication = await this.verfications.save(
+          this.verfications.create({ user }),
+        );
+        this.mailService.sendVerificationEmail(user.email, verfication.code);
       }
       if (password) {
         user.password = password;
@@ -112,7 +124,7 @@ export class UsersService {
       await this.users.save(user);
       return { ok: true };
     } catch (error) {
-      return { ok: false, error };
+      return { ok: false, error: "Couldn't update profile" };
     }
   }
 
@@ -124,7 +136,8 @@ export class UsersService {
       );
       if (verification) {
         verification.user.verified = true;
-        this.users.save(verification.user);
+        await this.users.save(verification.user);
+        await this.verfications.delete(verification.id);
         return {
           ok: true,
         };
@@ -133,7 +146,7 @@ export class UsersService {
     } catch (error) {
       return {
         ok: false,
-        error,
+        error: 'email could not be verified at this time',
       };
     }
   }
