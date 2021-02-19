@@ -107,6 +107,13 @@ export class UsersService {
     try {
       const user = await this.users.findOne(userId);
       if (email) {
+        const existingUserEmail = await this.users.findOne({ email });
+        if (existingUserEmail) {
+          return {
+            ok: false,
+            error: 'A user already exist with that email',
+          };
+        }
         user.email = email;
         user.verified = false;
         const verification = await this.verfications.findOne({ user });
