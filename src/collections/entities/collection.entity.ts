@@ -1,4 +1,4 @@
-import { Field } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { IsBoolean, IsNumber, IsString } from 'class-validator';
 import { Asset } from 'src/assets/entities/asset.entity';
 import { Channel } from 'src/channels/entities/channel.entity';
@@ -17,6 +17,7 @@ import {
 } from 'typeorm';
 import { CollectionAsset } from './collection-asset.entity';
 
+@ObjectType()
 @Entity()
 @Tree('closure-table')
 export class Collection extends CoreEntity {

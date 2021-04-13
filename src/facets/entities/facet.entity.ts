@@ -8,7 +8,7 @@ import { FacetValue } from './facet-value.entity';
 @ObjectType()
 @Entity()
 export class Facet extends CoreEntity {
-  @Column()
+  @Column({ unique: true })
   @Field((type) => String)
   @IsString()
   name: string;
@@ -23,7 +23,7 @@ export class Facet extends CoreEntity {
   @IsString()
   code: string;
 
-  @Field((type) => FacetValue)
+  @Field((type) => [FacetValue], { nullable: true })
   @OneToMany((type) => FacetValue, (value) => value.facet)
   values: FacetValue[];
 }

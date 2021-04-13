@@ -4,7 +4,7 @@ import {
   ObjectType,
   registerEnumType,
 } from '@nestjs/graphql';
-import { IsString } from 'class-validator';
+import { IsEnum, IsNumber, IsString } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Column, Entity } from 'typeorm';
 
@@ -16,8 +16,8 @@ export enum AssetType {
 
 registerEnumType(AssetType, { name: 'AssetType' });
 
-@InputType({ isAbstract: true })
 @ObjectType()
+@InputType({ isAbstract: true })
 @Entity()
 export class Asset extends CoreEntity {
   @Column()
@@ -27,6 +27,7 @@ export class Asset extends CoreEntity {
 
   @Column({ type: 'enum', enum: AssetType })
   @Field((type) => AssetType)
+  @IsEnum(AssetType)
   type: AssetType;
 
   @Column()
@@ -36,14 +37,17 @@ export class Asset extends CoreEntity {
 
   @Column({ default: 0 })
   @Field((type) => Number)
+  @IsNumber()
   width: number;
 
   @Column({ default: 0 })
   @Field((type) => Number)
+  @IsNumber()
   height: number;
 
   @Column()
   @Field((type) => Number)
+  @IsNumber()
   fileSize: number;
 
   @Column()
