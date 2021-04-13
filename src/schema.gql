@@ -22,8 +22,9 @@ enum UserRole {
   Owner
   Delivery
   Cashier
-  reseller
+  Reseller
   Sales
+  Manager
 }
 
 type CreateAccountOutput {
@@ -51,6 +52,45 @@ type UserProfileOutput {
 type VerifyEmailOutput {
   error: String
   ok: Boolean!
+}
+
+type Asset {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  type: AssetType!
+  mimeType: String!
+  width: Float!
+  height: Float!
+  fileSize: Float!
+  source: String!
+  preview: String!
+}
+
+enum AssetType {
+  IMAGE
+  VIDEO
+  BINARY
+}
+
+type Facet {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  isPrivate: Boolean!
+  code: String!
+  values: FacetValue!
+}
+
+type FacetValue {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  code: String!
+  facet: Facet!
 }
 
 type Query {
