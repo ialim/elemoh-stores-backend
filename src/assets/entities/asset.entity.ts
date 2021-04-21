@@ -16,8 +16,8 @@ export enum AssetType {
 
 registerEnumType(AssetType, { name: 'AssetType' });
 
+@InputType('AssetInputType', { isAbstract: true })
 @ObjectType()
-@InputType({ isAbstract: true })
 @Entity()
 export class Asset extends CoreEntity {
   @Column()

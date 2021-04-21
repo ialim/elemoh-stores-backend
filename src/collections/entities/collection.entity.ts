@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { IsBoolean, IsNumber, IsString } from 'class-validator';
 import { Asset } from 'src/assets/entities/asset.entity';
 import { Channel } from 'src/channels/entities/channel.entity';
@@ -17,6 +17,7 @@ import {
 } from 'typeorm';
 import { CollectionAsset } from './collection-asset.entity';
 
+@InputType('CollectionInputType', { isAbstract: true })
 @ObjectType()
 @Entity()
 @Tree('closure-table')
@@ -55,14 +56,14 @@ export class Collection extends CoreEntity {
   @ManyToOne((type) => Asset, { onDelete: 'SET NULL' })
   featuredAsset: Asset;
 
-  @Field((type) => CollectionAsset)
+  @Field((type) => [CollectionAsset])
   @OneToMany(
     (type) => CollectionAsset,
     (collectionAsset) => collectionAsset.collection,
   )
   assets: CollectionAsset[];
 
-  @Field((type) => ProductVariant)
+  @Field((type) => [ProductVariant])
   @ManyToMany(
     (type) => ProductVariant,
     (productVariant) => productVariant.collections,
@@ -76,7 +77,7 @@ export class Collection extends CoreEntity {
   @TreeParent()
   parent: Collection;
 
-  @Field((type) => Channel)
+  @Field((type) => [Channel])
   @ManyToMany((type) => Channel)
   @JoinTable()
   channels: Channel[];

@@ -1,4 +1,9 @@
-import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
+import {
+  Field,
+  InputType,
+  ObjectType,
+  registerEnumType,
+} from '@nestjs/graphql';
 import { IsBoolean, IsEnum, IsNumber, IsString } from 'class-validator';
 import { Asset } from 'src/assets/entities/asset.entity';
 import { Channel } from 'src/channels/entities/channel.entity';
@@ -31,6 +36,8 @@ registerEnumType(GlobalFlag, { name: 'GlobalFlag' });
  *
  * @docsCategory entities
  */
+
+@InputType('ProductVariantInputType', { isAbstract: true })
 @ObjectType()
 @Entity()
 export class ProductVariant extends CoreEntity {
@@ -38,7 +45,7 @@ export class ProductVariant extends CoreEntity {
   deletedAt: Date | null;
 
   @Field((type) => String)
-  @Column()
+  @Column({ unique: true })
   @IsString()
   name: string;
 
@@ -48,7 +55,7 @@ export class ProductVariant extends CoreEntity {
   enabled: boolean;
 
   @Field((type) => String)
-  @Column()
+  @Column({ unique: true })
   @IsString()
   sku: string;
 
@@ -80,7 +87,7 @@ export class ProductVariant extends CoreEntity {
   @ManyToOne((type) => Asset, { onDelete: 'SET NULL' })
   featuredAsset: Asset;
 
-  @Field((type) => ProductVariantAsset)
+  @Field((type) => [ProductVariantAsset], { nullable: true })
   @OneToMany(
     (type) => ProductVariantAsset,
     (productVariantAsset) => productVariantAsset.productVariant,
@@ -90,7 +97,7 @@ export class ProductVariant extends CoreEntity {
   )
   assets: ProductVariantAsset[];
 
-  @Field((type) => ProductVariantPrice)
+  @Field((type) => [ProductVariantPrice])
   @OneToMany((type) => ProductVariantPrice, (price) => price.variant, {
     eager: true,
   })
@@ -140,23 +147,23 @@ export class ProductVariant extends CoreEntity {
   @IsEnum(GlobalFlag)
   trackInventory: GlobalFlag;
 
-  @Field((type) => StockMovement)
+  @Field((type) => [StockMovement], { nullable: true })
   @OneToMany(
     (type) => StockMovement,
     (stockMovement) => stockMovement.productVariant,
   )
   stockMovements: StockMovement[];
 
-  @Field((type) => FacetValue)
+  @Field((type) => [FacetValue], { nullable: true })
   @ManyToMany((type) => FacetValue)
   @JoinTable()
   facetValues: FacetValue[];
 
-  @Field((type) => Collection)
+  @Field((type) => [Collection], { nullable: true })
   @ManyToMany((type) => Collection, (collection) => collection.productVariants)
   collections: Collection[];
 
-  @Field((type) => Channel)
+  @Field((type) => [Channel])
   @ManyToMany((type) => Channel)
   @JoinTable()
   channels: Channel[];

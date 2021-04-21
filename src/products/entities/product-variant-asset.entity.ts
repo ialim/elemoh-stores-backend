@@ -1,12 +1,13 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { IsNumber } from 'class-validator';
-import { CoreEntity } from 'src/common/entities/core.entity';
+import { OrderableAsset } from 'src/assets/entities/orderable-asset.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { ProductVariant } from './product-variant.entity';
 
+@InputType('ProductVariantAssetInputType', { isAbstract: true })
 @ObjectType()
 @Entity()
-export class ProductVariantAsset extends CoreEntity {
+export class ProductVariantAsset extends OrderableAsset {
   @Field((type) => Number)
   @Column()
   @IsNumber()

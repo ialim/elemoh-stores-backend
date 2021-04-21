@@ -4,7 +4,7 @@ import { CoreEntity } from 'src/common/entities/core.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
 import { FacetValue } from './facet-value.entity';
 
-@InputType({ isAbstract: true })
+@InputType('FacetInputType', { isAbstract: true })
 @ObjectType()
 @Entity()
 export class Facet extends CoreEntity {

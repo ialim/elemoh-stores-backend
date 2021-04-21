@@ -87,6 +87,7 @@ import { CollectionAsset } from './collections/entities/collection-asset.entity'
     GraphQLModule.forRoot({
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       context: ({ req }) => ({ user: req['user'] }),
+      uploads: false,
     }),
     JwtModule.forRoot({
       privateKey: process.env.SECRET_KEY,

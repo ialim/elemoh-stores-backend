@@ -15,7 +15,7 @@ import {
 import { ProductAsset } from './product-asset.entity';
 import { ProductVariant } from './product-variant.entity';
 
-@InputType({ isAbstract: true })
+@InputType('ProductInputType', { isAbstract: true })
 @ObjectType()
 @Entity()
 export class Product extends CoreEntity {
@@ -39,24 +39,24 @@ export class Product extends CoreEntity {
   @IsBoolean()
   enabled: boolean;
 
-  @Field((type) => Asset)
+  @Field((type) => Asset, { nullable: true })
   @ManyToOne((type) => Asset, { onDelete: 'SET NULL' })
   featuredAsset: Asset;
 
-  @Field((type) => Asset)
+  @Field((type) => [ProductAsset], { nullable: true })
   @OneToMany((type) => ProductAsset, (productAsset) => productAsset.product)
   assets: ProductAsset[];
 
-  @Field((type) => ProductVariant)
+  @Field((type) => [ProductVariant], { nullable: true })
   @OneToMany((type) => ProductVariant, (variant) => variant.product)
   variants: ProductVariant[];
 
-  @Field((type) => FacetValue)
+  @Field((type) => [FacetValue], { nullable: true })
   @ManyToMany((type) => FacetValue)
   @JoinTable()
   facetValues: FacetValue[];
 
-  @Field((type) => Channel)
+  @Field((type) => [Channel], { nullable: true })
   @ManyToMany((type) => Channel)
   @JoinTable()
   channels: Channel[];

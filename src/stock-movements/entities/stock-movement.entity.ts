@@ -2,7 +2,7 @@ import { CoreEntity } from 'src/common/entities/core.entity';
 import { ProductVariant } from 'src/products/entities/product-variant.entity';
 import { Column, Entity, ManyToOne, TableInheritance } from 'typeorm';
 import { StockMovementType } from 'src/common/generated-types';
-import { ObjectType } from '@nestjs/graphql';
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
 
 /**
  * @description
@@ -11,6 +11,7 @@ import { ObjectType } from '@nestjs/graphql';
  *
  * @docsCategory entities
  */
+@InputType('StockMovementInputType', { isAbstract: true })
 @ObjectType()
 @Entity()
 @TableInheritance({ column: { type: 'varchar', name: 'discriminator' } })
@@ -18,9 +19,11 @@ export abstract class StockMovement extends CoreEntity {
   @Column({ nullable: false, type: 'varchar' })
   readonly type: StockMovementType;
 
+  @Field((type) => ProductVariant)
   @ManyToOne((type) => ProductVariant, (variant) => variant.stockMovements)
   productVariant: ProductVariant;
 
+  @Field((type) => Number)
   @Column()
   quantity: number;
 }
