@@ -755,6 +755,21 @@ type EditCollectionOutput {
   ok: Boolean!
 }
 
+type CreateStockAdjustmentOutput {
+  error: String
+  ok: Boolean!
+}
+
+type DeleteStockAdjustmentOutput {
+  error: String
+  ok: Boolean!
+}
+
+type EditStockAdjustmentOutput {
+  error: String
+  ok: Boolean!
+}
+
 type Query {
   me: User!
   userProfile(userId: Float!): UserProfileOutput!
@@ -807,6 +822,9 @@ type Mutation {
   createCollectionAsset(input: CreateCollectionAssetInput!): CreateCollectionAssetOutput!
   editCollectionAsset(input: EditCollectionAssetInput!): EditCollectionAssetOutput!
   deleteCollectionAsset(collectionAssetId: Float!): DeleteCollectionAssetOutput!
+  createStockAdjustment(input: CreateStockAdjustmentInput!): CreateStockAdjustmentOutput!
+  editStockAdjustment(input: EditStockAdjustmentInput!): EditStockAdjustmentOutput!
+  deleteStockAdjustment(stockAdjustmentId: Float!): DeleteStockAdjustmentOutput!
 }
 
 input CreateAccountInput {
@@ -1147,4 +1165,17 @@ input EditCollectionAssetInput {
   collectionId: Float
   collection: CollectionInputType
   collectionAssetId: Float!
+}
+
+input CreateStockAdjustmentInput {
+  productVariant: ProductVariantInputType!
+  quantity: Float!
+  productVariantId: Float!
+}
+
+input EditStockAdjustmentInput {
+  productVariant: ProductVariantInputType
+  quantity: Float
+  productVariantId: Float!
+  stockAdjustmentId: Float!
 }

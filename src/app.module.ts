@@ -35,6 +35,7 @@ import { FacetValue } from './facets/entities/facet-value.entity';
 import { Facet } from './facets/entities/facet.entity';
 import { Collection } from './collections/entities/collection.entity';
 import { CollectionAsset } from './collections/entities/collection-asset.entity';
+import { StockAdjustment } from './stock-movements/entities/stock-adjustment.entity';
 
 @Module({
   imports: [
@@ -78,6 +79,7 @@ import { CollectionAsset } from './collections/entities/collection-asset.entity'
         ProductVariantAsset,
         ProductVariantPrice,
         StockMovement,
+        StockAdjustment,
         Store,
         User,
         Verification,
