@@ -91,7 +91,7 @@ export class ProductsService {
     enabled,
     channels,
     channelId,
-    featuredAsset,
+    featuredAssetId,
   }: CreateProductInput): Promise<CreateProductOutput> {
     try {
       const product = await this.products.findOne({
@@ -99,6 +99,9 @@ export class ProductsService {
       });
       const channel = await this.products.findOne({
         id: channelId,
+      });
+      const asset = await this.assetsService.findById({
+        assetId: featuredAssetId,
       });
       if (!product && channel) {
         await this.products.save(
@@ -108,7 +111,7 @@ export class ProductsService {
             description,
             enabled,
             channels,
-            featuredAsset,
+            featuredAsset: asset.ok ? asset.asset : null,
           }),
         );
         return { ok: true, error: null };
@@ -126,17 +129,22 @@ export class ProductsService {
     description,
     enabled,
     channels,
-    featuredAsset,
+    featuredAssetId,
   }: EditProductInput): Promise<EditProductOutput> {
     try {
       const product = await this.products.findOne({ id: productId });
       if (product) {
+        if (featuredAssetId) {
+          const asset = await this.assetsService.findById({
+            assetId: featuredAssetId,
+          });
+          product.featuredAsset = asset.ok ? asset.asset : null;
+        }
         name && (product.name = name);
         slug && (product.slug = slug);
         description && (product.description = description);
         enabled && (product.enabled = enabled);
         channels && (product.channels = channels);
-        featuredAsset && (product.featuredAsset = featuredAsset);
         await this.products.save(product);
         return {
           ok: true,

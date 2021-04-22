@@ -719,6 +719,42 @@ type EditFacetOutput {
   ok: Boolean!
 }
 
+type AllCollectionOutput {
+  error: String
+  ok: Boolean!
+  collections: [Collection!]
+}
+
+type CreateCollectionAssetOutput {
+  error: String
+  ok: Boolean!
+}
+
+type CreateCollectionOutput {
+  error: String
+  ok: Boolean!
+}
+
+type DeleteCollectionOutput {
+  error: String
+  ok: Boolean!
+}
+
+type DeleteCollectionAssetOutput {
+  error: String
+  ok: Boolean!
+}
+
+type EditCollectionAssetOutput {
+  error: String
+  ok: Boolean!
+}
+
+type EditCollectionOutput {
+  error: String
+  ok: Boolean!
+}
+
 type Query {
   me: User!
   userProfile(userId: Float!): UserProfileOutput!
@@ -728,6 +764,7 @@ type Query {
   allChannels: AllChannelOutput!
   findChannel(channelId: Float!): FindChannelOutput!
   allFacets: AllFacetOutput!
+  allCollection: AllCollectionOutput!
 }
 
 type Mutation {
@@ -764,6 +801,12 @@ type Mutation {
   createFacetValue(input: CreateFacetValueInput!): CreateFacetValueOutput!
   editFacetValue(input: EditFacetValueInput!): EditFacetValueOutput!
   deleteFacetValue(facetId: Float!, facetValueId: Float!): DeleteFacetValueOutput!
+  createCollection(input: CreateCollectionInput!): CreateCollectionOutput!
+  editCollection(input: EditCollectionInput!): EditCollectionOutput!
+  deleteCollection(collectionId: Float!): DeleteCollectionOutput!
+  createCollectionAsset(input: CreateCollectionAssetInput!): CreateCollectionAssetOutput!
+  editCollectionAsset(input: EditCollectionAssetInput!): EditCollectionAssetOutput!
+  deleteCollectionAsset(collectionAssetId: Float!): DeleteCollectionAssetOutput!
 }
 
 input CreateAccountInput {
@@ -791,20 +834,9 @@ input CreateProductInput {
   slug: String!
   description: String!
   enabled: Boolean!
-  featuredAsset: AssetInputType
   channels: [ChannelInputType!]
   channelId: Float!
-}
-
-input AssetInputType {
-  name: String!
-  type: AssetType!
-  mimeType: String!
-  width: Float!
-  height: Float!
-  fileSize: Float!
-  source: String!
-  preview: String!
+  featuredAssetId: Float!
 }
 
 input ChannelInputType {
@@ -822,9 +854,9 @@ input EditProductInput {
   slug: String
   description: String
   enabled: Boolean
-  featuredAsset: AssetInputType
   channels: [ChannelInputType!]
   productId: Float!
+  featuredAssetId: Float!
 }
 
 input CreateProductAssetInput {
@@ -833,6 +865,17 @@ input CreateProductAssetInput {
   position: Float!
   productId: Float!
   product: ProductInputType!
+}
+
+input AssetInputType {
+  name: String!
+  type: AssetType!
+  mimeType: String!
+  width: Float!
+  height: Float!
+  fileSize: Float!
+  source: String!
+  preview: String!
 }
 
 input ProductInputType {
@@ -1064,4 +1107,44 @@ input EditFacetValueInput {
   code: String
   facetId: Float!
   facetValueId: Float!
+}
+
+input CreateCollectionInput {
+  isRoot: Boolean!
+  position: Float!
+  isPrivate: Boolean!
+  name: String!
+  description: String!
+  slug: String!
+  parentId: Float!
+  featuredAssetId: Float!
+}
+
+input EditCollectionInput {
+  isRoot: Boolean
+  position: Float
+  isPrivate: Boolean
+  name: String
+  description: String
+  slug: String
+  parentId: Float!
+  featuredAssetId: Float!
+  collectionId: Float!
+}
+
+input CreateCollectionAssetInput {
+  assetId: Float!
+  asset: AssetInputType!
+  position: Float!
+  collectionId: Float!
+  collection: CollectionInputType!
+}
+
+input EditCollectionAssetInput {
+  assetId: Float
+  asset: AssetInputType
+  position: Float
+  collectionId: Float
+  collection: CollectionInputType
+  collectionAssetId: Float!
 }

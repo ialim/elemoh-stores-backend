@@ -1,23 +1,25 @@
 import { Field, InputType, ObjectType, OmitType } from '@nestjs/graphql';
 import { CoreOutput } from 'src/common/dtos/output.dto';
-import { Product } from '../entities/product.entity';
+import { Collection } from '../entities/collection.entity';
 
 @InputType()
-export class CreateProductInput extends OmitType(Product, [
+export class CreateCollectionInput extends OmitType(Collection, [
   'id',
   'createdAt',
   'updatedAt',
   'assets',
-  'variants',
-  'facetValues',
+  'productVariants',
   'featuredAsset',
+  'channels',
+  'children',
+  'parent',
 ]) {
   @Field((type) => Number)
-  channelId: number;
+  parentId?: number;
 
   @Field((type) => Number)
   featuredAssetId: number;
 }
 
 @ObjectType()
-export class CreateProductOutput extends CoreOutput {}
+export class CreateCollectionOutput extends CoreOutput {}

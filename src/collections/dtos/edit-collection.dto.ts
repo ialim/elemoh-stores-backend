@@ -6,25 +6,31 @@ import {
   PartialType,
 } from '@nestjs/graphql';
 import { CoreOutput } from 'src/common/dtos/output.dto';
-import { Product } from '../entities/product.entity';
+import { Collection } from '../entities/collection.entity';
 
 @InputType()
-export class EditProductInput extends PartialType(
-  OmitType(Product, [
+export class EditCollectionInput extends PartialType(
+  OmitType(Collection, [
+    'id',
     'createdAt',
     'updatedAt',
     'assets',
-    'variants',
-    'facetValues',
+    'productVariants',
+    'channels',
     'featuredAsset',
+    'children',
+    'parent',
   ]),
 ) {
   @Field((type) => Number)
-  productId: number;
+  parentId?: number;
 
   @Field((type) => Number)
   featuredAssetId?: number;
+
+  @Field((type) => Number)
+  collectionId: number;
 }
 
 @ObjectType()
-export class EditProductOutput extends CoreOutput {}
+export class EditCollectionOutput extends CoreOutput {}

@@ -11,7 +11,6 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
-  Tree,
   TreeChildren,
   TreeParent,
 } from 'typeorm';
@@ -20,7 +19,6 @@ import { CollectionAsset } from './collection-asset.entity';
 @InputType('CollectionInputType', { isAbstract: true })
 @ObjectType()
 @Entity()
-@Tree('closure-table')
 export class Collection extends CoreEntity {
   @Field((type) => Boolean)
   @Column({ default: false })
