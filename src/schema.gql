@@ -755,6 +755,14 @@ type EditCollectionOutput {
   ok: Boolean!
 }
 
+type StockAdjustment {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  productVariant: ProductVariant!
+  quantity: Float!
+}
+
 type CreateStockAdjustmentOutput {
   error: String
   ok: Boolean!
@@ -770,6 +778,124 @@ type EditStockAdjustmentOutput {
   ok: Boolean!
 }
 
+type FindStockAdjustmentOutput {
+  error: String
+  ok: Boolean!
+  stockAdjustment: StockAdjustment
+}
+
+input StockAdjustmentInputType {
+  productVariant: ProductVariantInputType!
+  quantity: Float!
+}
+
+input ProductVariantInputType {
+  name: String!
+  enabled: Boolean!
+  sku: String!
+  listPrice: Float!
+  listPriceIncludesTax: Boolean!
+  currencyCode: CurrencyCode!
+  featuredAsset: AssetInputType!
+  assets: [ProductVariantAssetInputType!]
+  productVariantPrices: [ProductVariantPriceInputType!]!
+  product: ProductInputType!
+  productId: Float!
+  stockOnHand: Float!
+  stockAllocated: Float!
+  outOfStockThreshold: Float!
+  useGlobalOutOfStockThreshold: Boolean!
+  trackInventory: GlobalFlag!
+  stockMovements: [StockMovementInputType!]
+  facetValues: [FacetValueInputType!]
+  collections: [CollectionInputType!]
+  channels: [ChannelInputType!]!
+}
+
+input AssetInputType {
+  name: String!
+  type: AssetType!
+  mimeType: String!
+  width: Float!
+  height: Float!
+  fileSize: Float!
+  source: String!
+  preview: String!
+}
+
+input ProductVariantAssetInputType {
+  productVariantId: Float!
+  productVariant: ProductVariantInputType!
+}
+
+input ProductVariantPriceInputType {
+  price: Float!
+  channelId: Float!
+  variant: ProductVariantInputType!
+}
+
+input ProductInputType {
+  name: String!
+  slug: String!
+  description: String!
+  enabled: Boolean!
+  featuredAsset: AssetInputType
+  assets: [ProductAssetInputType!]
+  variants: [ProductVariantInputType!]
+  facetValues: [FacetValueInputType!]
+  channels: [ChannelInputType!]
+}
+
+input ProductAssetInputType {
+  productId: Float!
+  product: ProductInputType!
+}
+
+input FacetValueInputType {
+  name: String!
+  code: String!
+  facet: FacetInputType!
+}
+
+input FacetInputType {
+  name: String!
+  isPrivate: Boolean!
+  code: String!
+  values: [FacetValueInputType!]
+}
+
+input ChannelInputType {
+  name: String!
+  code: String!
+  token: String!
+  defaultLanguageCode: LanguageCode!
+  currencyCode: CurrencyCode!
+  pricesIncludeTax: Boolean!
+}
+
+input StockMovementInputType {
+  productVariant: ProductVariantInputType!
+  quantity: Float!
+}
+
+input CollectionInputType {
+  isRoot: Boolean!
+  position: Float!
+  isPrivate: Boolean!
+  name: String!
+  description: String!
+  slug: String!
+  featuredAsset: AssetInputType!
+  assets: [CollectionAssetInputType!]!
+  productVariants: [ProductVariantInputType!]!
+  channels: [ChannelInputType!]!
+}
+
+input CollectionAssetInputType {
+  collectionId: Float!
+  collection: CollectionInputType!
+}
+
 type Query {
   me: User!
   userProfile(userId: Float!): UserProfileOutput!
@@ -780,6 +906,7 @@ type Query {
   findChannel(channelId: Float!): FindChannelOutput!
   allFacets: AllFacetOutput!
   allCollection: AllCollectionOutput!
+  findStockAdjustment(stockAdjustmentId: Float!): FindStockAdjustmentOutput!
 }
 
 type Mutation {
@@ -857,15 +984,6 @@ input CreateProductInput {
   featuredAssetId: Float!
 }
 
-input ChannelInputType {
-  name: String!
-  code: String!
-  token: String!
-  defaultLanguageCode: LanguageCode!
-  currencyCode: CurrencyCode!
-  pricesIncludeTax: Boolean!
-}
-
 input EditProductInput {
   id: Float
   name: String
@@ -883,104 +1001,6 @@ input CreateProductAssetInput {
   position: Float!
   productId: Float!
   product: ProductInputType!
-}
-
-input AssetInputType {
-  name: String!
-  type: AssetType!
-  mimeType: String!
-  width: Float!
-  height: Float!
-  fileSize: Float!
-  source: String!
-  preview: String!
-}
-
-input ProductInputType {
-  name: String!
-  slug: String!
-  description: String!
-  enabled: Boolean!
-  featuredAsset: AssetInputType
-  assets: [ProductAssetInputType!]
-  variants: [ProductVariantInputType!]
-  facetValues: [FacetValueInputType!]
-  channels: [ChannelInputType!]
-}
-
-input ProductAssetInputType {
-  productId: Float!
-  product: ProductInputType!
-}
-
-input ProductVariantInputType {
-  name: String!
-  enabled: Boolean!
-  sku: String!
-  listPrice: Float!
-  listPriceIncludesTax: Boolean!
-  currencyCode: CurrencyCode!
-  featuredAsset: AssetInputType!
-  assets: [ProductVariantAssetInputType!]
-  productVariantPrices: [ProductVariantPriceInputType!]!
-  product: ProductInputType!
-  productId: Float!
-  stockOnHand: Float!
-  stockAllocated: Float!
-  outOfStockThreshold: Float!
-  useGlobalOutOfStockThreshold: Boolean!
-  trackInventory: GlobalFlag!
-  stockMovements: [StockMovementInputType!]
-  facetValues: [FacetValueInputType!]
-  collections: [CollectionInputType!]
-  channels: [ChannelInputType!]!
-}
-
-input ProductVariantAssetInputType {
-  productVariantId: Float!
-  productVariant: ProductVariantInputType!
-}
-
-input ProductVariantPriceInputType {
-  price: Float!
-  channelId: Float!
-  variant: ProductVariantInputType!
-}
-
-input StockMovementInputType {
-  productVariant: ProductVariantInputType!
-  quantity: Float!
-}
-
-input FacetValueInputType {
-  name: String!
-  code: String!
-  facet: FacetInputType!
-}
-
-input FacetInputType {
-  name: String!
-  isPrivate: Boolean!
-  code: String!
-  values: [FacetValueInputType!]
-}
-
-input CollectionInputType {
-  isRoot: Boolean!
-  position: Float!
-  isPrivate: Boolean!
-  name: String!
-  description: String!
-  slug: String!
-  featuredAsset: AssetInputType!
-  assets: [CollectionAssetInputType!]!
-  productVariants: [ProductVariantInputType!]!
-  channels: [ChannelInputType!]!
-}
-
-input CollectionAssetInputType {
-  collectionId: Float!
-  collection: CollectionInputType!
 }
 
 input EditProductAssetInput {

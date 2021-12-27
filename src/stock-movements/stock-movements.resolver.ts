@@ -1,4 +1,4 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
   CreateStockAdjustmentInput,
   CreateStockAdjustmentOutput,
@@ -11,6 +11,10 @@ import {
   EditStockAdjustmentInput,
   EditStockAdjustmentOutput,
 } from './dtos/edit-stock-adjustment.dto';
+import {
+  FindStockAdjustmentInput,
+  FindStockAdjustmentOutput,
+} from './dtos/find-stock-adjustment.dto';
 import { StockMovement } from './entities/stock-movement.entity';
 import { StockMovementsService } from './stock-movements.service';
 
@@ -42,6 +46,15 @@ export class StockMovementsResolver {
   ): Promise<DeleteStockAdjustmentOutput> {
     return await this.stockMovementsService.deleteStockAdjustment(
       deleteStockAdjustmentInput,
+    );
+  }
+
+  @Query((returns) => FindStockAdjustmentOutput)
+  async findStockAdjustment(
+    @Args() findStockAdjustmentInput: FindStockAdjustmentInput,
+  ): Promise<FindStockAdjustmentOutput> {
+    return await this.stockMovementsService.findStockAdjustment(
+      findStockAdjustmentInput,
     );
   }
 }

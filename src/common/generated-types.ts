@@ -656,8 +656,42 @@ export enum GlobalFlag {
 export enum StockMovementType {
   ADJUSTMENT = 'ADJUSTMENT',
   ALLOCATION = 'ALLOCATION',
-  RELEASE = 'RELEASE',
-  SALE = 'SALE',
   CANCELLATION = 'CANCELLATION',
+  PURCHASE = 'PURCHASE',
+  RELEASE = 'RELEASE',
   RETURN = 'RETURN',
+  SALE = 'SALE',
 }
+
+export type TaxLine = {
+  __typename?: 'TaxLine';
+  description: string;
+  taxRate: number;
+};
+
+export type OrderAddress = {
+  __typename?: 'OrderAddress';
+  fullName?: string;
+  company?: string;
+  streetLine1?: string;
+  streetLine2?: string;
+  city?: string;
+  province?: string;
+  postalCode?: string;
+  country?: string;
+  countryCode?: string;
+  phoneNumber?: string;
+};
+
+export enum AdjustmentType {
+  PROMOTION = 'PROMOTION',
+  DISTRIBUTED_ORDER_PROMOTION = 'DISTRIBUTED_ORDER_PROMOTION',
+}
+
+export type Adjustment = {
+  __typename?: 'Adjustment';
+  adjustmentSource: string;
+  type: AdjustmentType;
+  description: string;
+  amount: number;
+};

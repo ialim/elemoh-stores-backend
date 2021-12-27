@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ProductVariant } from 'src/products/entities/product-variant.entity';
+import { ProductsService } from 'src/products/products.service';
 import { Repository } from 'typeorm';
 import {
   CreateStockAdjustmentInput,
@@ -11,15 +11,18 @@ import {
   DeleteStockAdjustmentOutput,
 } from './dtos/delete-stock-adjustment.dto';
 import { EditStockAdjustmentInput } from './dtos/edit-stock-adjustment.dto';
-import { StockMovement } from './entities/stock-movement.entity';
+import {
+  FindStockAdjustmentInput,
+  FindStockAdjustmentOutput,
+} from './dtos/find-stock-adjustment.dto';
+import { StockAdjustment } from './entities/stock-adjustment.entity';
 
 @Injectable()
 export class StockMovementsService {
   constructor(
-    @InjectRepository(StockMovement)
-    private readonly stockMovements: Repository<StockMovement>,
-    @InjectRepository(ProductVariant)
-    private readonly productVariants: Repository<ProductVariant>,
+    private readonly productsService: ProductsService,
+    @InjectRepository(StockAdjustment)
+    private readonly stockAdjustments: Repository<StockAdjustment>,
   ) {}
 
   async createStockAdjustment({
@@ -27,17 +30,23 @@ export class StockMovementsService {
     quantity,
   }: CreateStockAdjustmentInput): Promise<CreateStockAdjustmentOutput> {
     try {
-      const productVariant = await this.productVariants.findOne({
-        id: productVariantId,
+      const result = await this.productsService.findProductVariant({
+        productVariantId,
       });
-      const stcokAdjustment = await this.stockMovements.find({
-        productVariant,
+      if (!result.ok) {
+        return {
+          ok: false,
+          error: result.error,
+        };
+      }
+      const stockAdjustment = await this.stockAdjustments.findOne({
+        id: result.productVariant.id,
       });
-      if (!stcokAdjustment) {
-        await this.stockMovements.save(
-          this.stockMovements.create({
+      if (!stockAdjustment) {
+        await this.stockAdjustments.save(
+          this.stockAdjustments.create({
             quantity,
-            productVariant,
+            productVariant: result.ok ? result.productVariant : null,
           }),
         );
         return { ok: true, error: null };
@@ -54,21 +63,21 @@ export class StockMovementsService {
     stockAdjustmentId,
   }: EditStockAdjustmentInput): Promise<CreateStockAdjustmentOutput> {
     try {
-      const productVariant = await this.productVariants.findOne({
-        id: productVariantId,
+      const result = await this.productsService.findProductVariant({
+        productVariantId,
       });
-      const stockAdjustment = await this.stockMovements.findOne({
+      const stockAdjustment = await this.stockAdjustments.findOne({
         id: stockAdjustmentId,
       });
-      if (!stockAdjustment && !productVariant) {
+      if (!stockAdjustment && !result.ok) {
         return {
           ok: false,
           error: 'Either Stock Adjustment or ProductVariant does not exist',
         };
       }
       quantity && (stockAdjustment.quantity = quantity);
-      stockAdjustment.productVariant = productVariant;
-      await this.stockMovements.save(stockAdjustment);
+      stockAdjustment.productVariant = result.productVariant;
+      await this.stockAdjustments.save(stockAdjustment);
       return { ok: true, error: null };
     } catch (error) {
       return { ok: false, error };
@@ -79,14 +88,30 @@ export class StockMovementsService {
     stockAdjustmentId,
   }: DeleteStockAdjustmentInput): Promise<DeleteStockAdjustmentOutput> {
     try {
-      const stockAdjustment = await this.stockMovements.findOne({
+      const stockAdjustment = await this.stockAdjustments.findOne({
         id: stockAdjustmentId,
       });
       if (!stockAdjustment) {
         return { ok: false, error: 'StockAdjustment not found' };
       }
-      await this.stockMovements.remove(stockAdjustment);
+      await this.stockAdjustments.remove(stockAdjustment);
       return { ok: true, error: null };
+    } catch (error) {
+      return { ok: false, error };
+    }
+  }
+
+  async findStockAdjustment({
+    stockAdjustmentId,
+  }: FindStockAdjustmentInput): Promise<FindStockAdjustmentOutput> {
+    try {
+      const stockAdjustment = await this.stockAdjustments.findOne({
+        id: stockAdjustmentId,
+      });
+      if (!stockAdjustment) {
+        return { ok: false, error: 'StockAdjustment not found' };
+      }
+      return { ok: true, error: null, stockAdjustment };
     } catch (error) {
       return { ok: false, error };
     }

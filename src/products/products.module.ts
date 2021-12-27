@@ -23,5 +23,6 @@ import { ProductsService } from './products.service';
     ChannelsModule,
   ],
   providers: [ProductsResolver, ProductsService],
+  exports: [ProductsService],
 })
 export class ProductsModule {}

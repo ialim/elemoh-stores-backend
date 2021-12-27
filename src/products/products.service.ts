@@ -61,6 +61,10 @@ import {
 } from './dtos/edit-product-variant.dto';
 import { EditProductInput, EditProductOutput } from './dtos/edit-product.dto';
 import { AllProductVariantOutput } from './dtos/find-all-product-variant.dto';
+import {
+  FindProductVariantInput,
+  FindProductVariantOutput,
+} from './dtos/find-product-varaint.dto';
 import { FindProductInput, FindProductOutput } from './dtos/find-product.dto';
 import { ProductAsset } from './entities/product-asset.entity';
 import { ProductVariantAsset } from './entities/product-variant-asset.entity';
@@ -541,7 +545,7 @@ export class ProductsService {
         };
       }
       return {
-        ok: true,
+        ok: false,
         error: 'ProductVariant not found',
       };
     } catch (error) {
@@ -567,6 +571,32 @@ export class ProductsService {
       return {
         ok: false,
         error: 'No channel available',
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error: error,
+      };
+    }
+  }
+
+  async findProductVariant({
+    productVariantId,
+  }: FindProductVariantInput): Promise<FindProductVariantOutput> {
+    try {
+      const productVariant = await this.productVariants.findOne({
+        id: productVariantId,
+      });
+      if (productVariant) {
+        return {
+          ok: true,
+          error: null,
+          productVariant,
+        };
+      }
+      return {
+        ok: false,
+        error: 'ProductVariant not found',
       };
     } catch (error) {
       return {

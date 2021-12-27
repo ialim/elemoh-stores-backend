@@ -10,14 +10,14 @@ import * as bcrypt from 'bcrypt';
 import { InternalServerErrorException } from '@nestjs/common';
 import { IsBoolean, IsEmail, IsEnum, IsString } from 'class-validator';
 
-enum UserRole {
-  Customer,
-  Owner,
-  Delivery,
-  Cashier,
-  Reseller,
-  Sales,
-  Manager,
+export enum UserRole {
+  Customer = 'Customer',
+  Owner = 'Owner',
+  Delivery = 'Delivery',
+  Cashier = 'Cashier',
+  Reseller = 'Reseller',
+  Sales = 'Sales',
+  Manager = 'Manager',
 }
 
 registerEnumType(UserRole, { name: 'UserRole' });
