@@ -11,11 +11,13 @@ import {
   DeleteStockAdjustmentOutput,
 } from './dtos/delete-stock-adjustment.dto';
 import { EditStockAdjustmentInput } from './dtos/edit-stock-adjustment.dto';
+import { AllStockAdjustmentOutput } from './dtos/find-all-stock-adjustments.dto';
 import {
   FindStockAdjustmentInput,
   FindStockAdjustmentOutput,
 } from './dtos/find-stock-adjustment.dto';
 import { StockAdjustment } from './entities/stock-adjustment.entity';
+import { StockPurchase } from './entities/stock-purchase.entity';
 
 @Injectable()
 export class StockMovementsService {
@@ -23,8 +25,11 @@ export class StockMovementsService {
     private readonly productsService: ProductsService,
     @InjectRepository(StockAdjustment)
     private readonly stockAdjustments: Repository<StockAdjustment>,
+    @InjectRepository(StockPurchase)
+    private readonly stockPurchases: Repository<StockPurchase>,
   ) {}
 
+  /** Stock Adjustment Services */
   async createStockAdjustment({
     productVariantId,
     quantity,
@@ -116,4 +121,28 @@ export class StockMovementsService {
       return { ok: false, error };
     }
   }
+
+  async findAllStockAdjustment(): Promise<AllStockAdjustmentOutput> {
+    try {
+      const stockAdjustments = await this.stockAdjustments.find();
+      if (!stockAdjustments) {
+        return {
+          ok: false,
+          error: 'StockAdjustments not found',
+        };
+      }
+      return {
+        ok: true,
+        stockAdjustments,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
+  /** Stock Purchase Services */
+  async createStockPurchase(){}
 }

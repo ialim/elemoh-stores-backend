@@ -75,6 +75,7 @@ import { PeopleModule } from './people/people.module';
 import { SuppliersModule } from './suppliers/suppliers.module';
 import { Person } from './people/entities/people.entity';
 import { Supplier } from './suppliers/entities/supplier.entity';
+import { EmployeesModule } from './employees/employees.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -183,6 +184,7 @@ import { Supplier } from './suppliers/entities/supplier.entity';
     TaxratesModule,
     UsersModule,
     ZonesModule,
+    EmployeesModule,
   ],
   controllers: [],
   providers: [],

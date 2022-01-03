@@ -6,7 +6,16 @@ import { CoreEntity } from 'src/common/entities/core.entity';
 import { CurrencyCode, OrderAddress } from 'src/common/generated-types';
 import { Payment } from 'src/payments/entities/payment.entity';
 import { ShippingLine } from 'src/shipping/entities/shipping-line.entity';
-import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
+import { User } from 'src/users/entities/user.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { OrderLine } from './order-line.entity';
 import { OrderModification } from './order-modification.entity';
 
@@ -27,6 +36,11 @@ export type OrderState =
 @ObjectType()
 @Entity()
 export class Order extends CoreEntity {
+  @Field((type) => User)
+  @OneToOne((type) => User)
+  @JoinColumn()
+  user: User;
+
   @Field((type) => String)
   @IsString()
   @Column()

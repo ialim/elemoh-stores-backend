@@ -30,11 +30,11 @@ export class SuppliersService {
   ) {}
 
   async createSupplier({
-    personInput,
+    personId,
     VATNumber,
   }: CreateSupplierInput): Promise<CreateSupplierOutput> {
     try {
-      const personResult = await this.peopleService.createPerson(personInput);
+      const personResult = await this.peopleService.findPerson({ personId });
       if (personResult.ok) {
         await this.suppliers.save(
           this.suppliers.create({
@@ -60,7 +60,6 @@ export class SuppliersService {
   }
 
   async editSupplier({
-    personInput,
     supplierId,
     VATNumber,
   }: EditSupplierInput): Promise<EditSupplierOutput> {
@@ -80,14 +79,7 @@ export class SuppliersService {
         };
       }
 
-      const personResult = await this.peopleService.editPerson({
-        personId: supplier.person.id,
-        ...personInput,
-      });
-
       VATNumber && (supplier.VATNumber = VATNumber);
-
-      if (!personResult.ok) return { ok: false, error: personResult.error };
 
       await this.suppliers.save(supplier);
       return {

@@ -1,16 +1,19 @@
 import { Field, InputType, ObjectType, OmitType } from '@nestjs/graphql';
 import { CoreOutput } from 'src/common/dtos/output.dto';
-import { Supplier } from '../entities/supplier.entity';
+import { Store } from '../entities/store.entity';
 
 @InputType()
-export class CreateSupplierInput extends OmitType(Supplier, [
+export class CreateStoreInput extends OmitType(Store, [
   'createdAt',
   'updatedAt',
   'id',
+  'manager',
+  'address',
 ]) {
   @Field((type) => Number)
-  personId: number;
+  employeeId: number;
+  addressId: number;
 }
 
 @ObjectType()
-export class CreateSupplierOutput extends CoreOutput {}
+export class CreateStoreOutput extends CoreOutput {}

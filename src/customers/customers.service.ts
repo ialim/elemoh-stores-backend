@@ -52,12 +52,12 @@ export class CustomersService {
   ) {}
 
   async createCustomer({
-    personInput,
+    personId,
     channelId,
     channels,
   }: CreateCustomerInput): Promise<CreateCustomerOutput> {
     try {
-      const personResult = await this.peopleService.createPerson(personInput);
+      const personResult = await this.peopleService.findPerson({ personId });
       const result = await this.channelsService.findById({ channelId });
       channels = result.ok ? [result.channel] : [];
       if (personResult.ok) {
@@ -74,7 +74,7 @@ export class CustomersService {
       }
       return {
         ok: false,
-        error: 'Customer already exist',
+        error: personResult.error,
       };
     } catch (error) {
       return {
@@ -85,7 +85,6 @@ export class CustomersService {
   }
 
   async editCustomer({
-    personInput,
     customerId,
     channelId,
   }: EditCustomerInput): Promise<EditCustomerOutput> {
@@ -105,16 +104,10 @@ export class CustomersService {
         };
       }
 
-      const personResult = await this.peopleService.editPerson({
-        personId: customer.person.id,
-        ...personInput,
-      });
-
-      if (!personResult.ok) return { ok: false, error: personResult.error };
-
       if (channelId) {
         const result = await this.channelsService.findById({ channelId });
         result.ok &&
+          !customer.channels.includes(result.channel) &&
           (customer.channels = [...customer.channels, result.channel]);
       }
 

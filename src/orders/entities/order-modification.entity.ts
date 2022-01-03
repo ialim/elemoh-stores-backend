@@ -1,3 +1,4 @@
+import { Field, ObjectType } from '@nestjs/graphql';
 import { Address } from 'src/addresses/entities/address.entity';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { OrderAddress } from 'src/common/generated-types';
@@ -17,11 +18,14 @@ import {
 import { OrderItem } from './order-item.entity';
 import { Order } from './order.entity';
 
+@ObjectType()
 @Entity()
 export class OrderModification extends CoreEntity {
+  @Field((type) => String)
   @Column()
   note: string;
 
+  @Field((type) => Order)
   @ManyToOne((type) => Order, (order) => order.modifications, {
     onDelete: 'CASCADE',
   })

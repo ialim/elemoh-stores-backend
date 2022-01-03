@@ -1,21 +1,21 @@
 import { Field, InputType, ObjectType, OmitType } from '@nestjs/graphql';
 import { CoreOutput } from 'src/common/dtos/output.dto';
-import { Customer } from '../entities/customer.entity';
+import { Employee } from '../entities/employee.entity';
 
 @InputType()
-export class CreateCustomerInput extends OmitType(Customer, [
+export class CreateEmployeeInput extends OmitType(Employee, [
   'createdAt',
   'updatedAt',
   'id',
-  'sales',
-  'groups',
+  'profile',
+  'department',
 ]) {
   @Field((type) => Number)
-  channelId: number;
+  departmentId: number;
 
   @Field((type) => Number)
   personId: number;
 }
 
 @ObjectType()
-export class CreateCustomerOutput extends CoreOutput {}
+export class CreateEmployeeOutput extends CoreOutput {}

@@ -6,10 +6,6 @@ import {
   PartialType,
 } from '@nestjs/graphql';
 import { CoreOutput } from 'src/common/dtos/output.dto';
-import {
-  EditPersonInput,
-  EditPersonOutput,
-} from 'src/people/dtos/edit-person.dto';
 import { Customer } from '../entities/customer.entity';
 
 @InputType()
@@ -28,9 +24,6 @@ export class EditCustomerInput extends PartialType(
 
   @Field((type) => Number)
   channelId?: number;
-
-  @Field((type) => EditPersonOutput)
-  personInput: EditPersonInput;
 }
 
 @ObjectType()

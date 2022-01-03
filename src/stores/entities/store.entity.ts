@@ -1,7 +1,8 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { IsString, Length } from 'class-validator';
+import { Address } from 'src/addresses/entities/address.entity';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { User } from 'src/users/entities/user.entity';
+import { Employee } from 'src/employees/entities/employee.entity';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 
 @InputType({ isAbstract: true })
@@ -14,12 +15,12 @@ export class Store extends CoreEntity {
   @Length(10)
   name: string;
 
-  @OneToOne((type) => User, { onDelete: 'SET NULL' })
+  @OneToOne((type) => Employee, { onDelete: 'SET NULL' })
   @JoinColumn()
-  Manager: User;
+  manager: Employee;
 
-  @Field((type) => String)
-  @Column()
-  @IsString()
-  address: string;
+  @Field((type) => Address)
+  @OneToOne((type) => Address)
+  @JoinColumn()
+  address: Address;
 }

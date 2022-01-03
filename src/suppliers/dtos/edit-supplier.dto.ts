@@ -6,10 +6,6 @@ import {
   PartialType,
 } from '@nestjs/graphql';
 import { CoreOutput } from 'src/common/dtos/output.dto';
-import {
-  EditPersonInput,
-  EditPersonOutput,
-} from 'src/people/dtos/edit-person.dto';
 import { Supplier } from '../entities/supplier.entity';
 
 @InputType()
@@ -18,9 +14,6 @@ export class EditSupplierInput extends PartialType(
 ) {
   @Field((type) => Number)
   supplierId?: number;
-
-  @Field((type) => EditPersonOutput)
-  personInput: EditPersonInput;
 }
 
 @ObjectType()
