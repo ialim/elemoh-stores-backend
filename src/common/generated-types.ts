@@ -1,3 +1,5 @@
+import { registerEnumType } from '@nestjs/graphql';
+
 /**
  * @description
  * ISO 4217 currency code
@@ -662,6 +664,62 @@ export enum StockMovementType {
   RETURN = 'RETURN',
   SALE = 'SALE',
 }
+
+registerEnumType(StockMovementType, { name: 'StockMovementType' });
+
+export enum OrderState {
+  CREATED = 'Created',
+  ADDINGITEMS = 'AddingItems',
+  ARRANGINGPAYMENT = 'ArrangingPayment',
+  PAYMENTSETTLED = 'PaymentSettled',
+  PARTIALLYSHIPPED = 'PartiallyShipped',
+  PAYMENTAUTHORIZED = 'PaymentAuthorized',
+  SHIPPED = 'Shipped',
+  PARTIALLYDELIVERED = 'PartiallyDelivered',
+  DELIVERED = 'Delivered',
+  MODIFYING = 'Modifying',
+  ARRANGINGADDITIONALPAYMENT = 'ArrangingAdditionalPayment',
+  CANCELLED = 'Cancelled',
+}
+
+registerEnumType(OrderState, { name: 'OrderState' });
+
+export enum FulfillmentState {
+  CREATED = 'Created',
+  PENDING = 'Pending',
+  SHIPPED = 'Shipped',
+  DELIVERED = 'Delivered',
+  CANCELLED = 'Cancelled',
+}
+
+registerEnumType(FulfillmentState, { name: 'FulfillmentState' });
+
+export enum PaymentState {
+  CREATED = 'Created',
+  AUTHORIZED = 'Authorized',
+  SETTLED = 'Settled',
+  DECLINED = 'Declined',
+  ERROR = 'Error',
+}
+
+registerEnumType(PaymentState, { name: 'PaymentState' });
+
+export enum RefundState {
+  SETTLED = 'Settled',
+  PENDING = 'Pending',
+  FAILED = 'Failed',
+}
+
+registerEnumType(RefundState, { name: 'RefundState' });
+
+export enum AuthActions {
+  CREATE = 'craete',
+  UPDATE = 'update',
+  VIEW = 'view',
+  DELETE = 'delete',
+}
+
+registerEnumType(AuthActions, { name: 'AuthActions' });
 
 export type TaxLine = {
   __typename?: 'TaxLine';

@@ -2,14 +2,16 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type User {
+type Permission {
   id: Float!
   createdAt: DateTime!
   updatedAt: DateTime!
-  email: String!
-  password: String!
-  role: UserRole!
-  verified: Boolean!
+  users: [AuthActions!]!
+  order: [AuthActions!]!
+  collection: [AuthActions!]!
+  people: [AuthActions!]!
+  role: [AuthActions!]!
+  product: [AuthActions!]!
 }
 
 """
@@ -17,92 +19,11 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-enum UserRole {
-  Customer
-  Owner
-  Delivery
-  Cashier
-  Reseller
-  Sales
-  Manager
-}
-
-type CreateAccountOutput {
-  error: String
-  ok: Boolean!
-}
-
-type EditProfileOutput {
-  error: String
-  ok: Boolean!
-}
-
-type LoginOutput {
-  error: String
-  ok: Boolean!
-  token: String
-}
-
-type UserProfileOutput {
-  error: String
-  ok: Boolean!
-  user: User
-}
-
-type VerifyEmailOutput {
-  error: String
-  ok: Boolean!
-}
-
-type Asset {
-  id: Float!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  name: String!
-  type: AssetType!
-  mimeType: String!
-  width: Float!
-  height: Float!
-  fileSize: Float!
-  source: String!
-  preview: String!
-}
-
-enum AssetType {
-  IMAGE
-  VIDEO
-  BINARY
-}
-
-type CreateAssetOutput {
-  error: String
-  ok: Boolean!
-}
-
-type DeleteAssetOutput {
-  error: String
-  ok: Boolean!
-}
-
-type EditAssetOutput {
-  error: String
-  ok: Boolean!
-}
-
-type FindAssetOutput {
-  error: String
-  ok: Boolean!
-  asset: Asset!
-}
-
-type MultipleUploadAssetOutput {
-  error: String
-  ok: Boolean!
-}
-
-type SingleUploadAssetOutput {
-  error: String
-  ok: Boolean!
+enum AuthActions {
+  CREATE
+  UPDATE
+  VIEW
+  DELETE
 }
 
 type Channel {
@@ -437,6 +358,622 @@ enum CurrencyCode {
   ZWL
 }
 
+type Role {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  permissions: Permission
+  code: String!
+  name: String!
+  description: String!
+  channels: [Channel!]!
+}
+
+type User {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  email: String!
+  password: String!
+  role: Role!
+  verified: Boolean!
+}
+
+type Person {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  title: String!
+  firstName: String!
+  lastName: String!
+  phoneNumber: String!
+  emailAddress: String!
+  user: User
+  addresses: [Address!]
+  companyName: String!
+  taxNumber: String!
+}
+
+type Country {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  code: String!
+  enabled: String!
+}
+
+type Address {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  person: Person!
+  fullName: String!
+  company: String!
+  streetLine1: String!
+  streetLine2: String!
+  city: String!
+  province: String!
+  postalCode: String!
+  country: Country!
+  phoneNumber: String!
+  defaultShippingAddress: Boolean!
+  defaultBillingAddress: Boolean!
+}
+
+type Asset {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  type: AssetType!
+  mimeType: String!
+  width: Float!
+  height: Float!
+  fileSize: Float!
+  source: String!
+  preview: String!
+}
+
+enum AssetType {
+  IMAGE
+  VIDEO
+  BINARY
+}
+
+type ProductVariantAsset {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  assetId: Float!
+  asset: Asset!
+  position: Float!
+  productVariantId: Float!
+  productVariant: ProductVariant!
+}
+
+type ProductVariantPrice {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  price: Float!
+  channelId: Float!
+  variant: ProductVariant!
+}
+
+type ProductAsset {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  assetId: Float!
+  asset: Asset!
+  position: Float!
+  productId: Float!
+  product: Product!
+}
+
+type Facet {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  isPrivate: Boolean!
+  code: String!
+  values: [FacetValue!]
+}
+
+type FacetValue {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  code: String!
+  facet: Facet!
+}
+
+type Product {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  slug: String!
+  description: String!
+  enabled: Boolean!
+  featuredAsset: Asset
+  assets: [ProductAsset!]
+  variants: [ProductVariant!]
+  facetValues: [FacetValue!]
+  channels: [Channel!]
+}
+
+type StockMovement {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  productVariant: ProductVariant!
+  quantity: Float!
+  type: StockMovementType!
+}
+
+enum StockMovementType {
+  ADJUSTMENT
+  ALLOCATION
+  CANCELLATION
+  PURCHASE
+  RELEASE
+  RETURN
+  SALE
+}
+
+type ProductVariant {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  barcode: Float!
+  name: String!
+  enabled: Boolean!
+  listPrice: Float!
+  listPriceIncludesTax: Boolean!
+  currencyCode: CurrencyCode!
+  featuredAsset: Asset!
+  assets: [ProductVariantAsset!]
+  productVariantPrices: [ProductVariantPrice!]!
+  product: Product!
+  productId: Float!
+  stockOnHand: Float!
+  stockAllocated: Float!
+  outOfStockThreshold: Float!
+  useGlobalOutOfStockThreshold: Boolean!
+  trackInventory: GlobalFlag!
+  stockMovements: [StockMovement!]
+  facetValues: [FacetValue!]
+  collections: [Collection!]
+  channels: [Channel!]!
+  deletedAt: DateTime!
+}
+
+enum GlobalFlag {
+  TRUE
+  FALSE
+  INHERIT
+}
+
+type Collection {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  isRoot: Boolean!
+  position: Float!
+  isPrivate: Boolean!
+  name: String!
+  description: String!
+  slug: String!
+  featuredAsset: Asset!
+  assets: [CollectionAsset!]!
+  productVariants: [ProductVariant!]!
+  parent: Collection
+  channels: [Channel!]!
+  children: [Collection!]!
+}
+
+type CollectionAsset {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  assetId: Float!
+  asset: Asset!
+  position: Float!
+  collectionId: Float!
+  collection: Collection!
+}
+
+type TaxCategory {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+}
+
+type OrderLine {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  sku: String!
+  productVariant: ProductVariant!
+  taxCategory: TaxCategory!
+  featuredAsset: Asset!
+  order: Order!
+  quantity: Float!
+  received: Float!
+  discount: Float!
+  tax: Float!
+  cost: Float!
+  total: Float!
+}
+
+type Fulfillment {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  state: String!
+  trackingCode: String!
+  method: String!
+  handlerCode: String!
+  orderItems: [OrderItem!]!
+}
+
+type OrderItem {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  adjustments: JSON!
+  taxLines: JSON!
+  fulfillments: [Fulfillment!]!
+  listPrice: Float!
+  listPriceIncludesTax: Boolean!
+  refund: Refund!
+  refundId: Float!
+  cancelled: Boolean!
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+
+type Refund {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  items: Float!
+  shipping: Float!
+  adjustment: Float!
+  total: Float!
+  method: String!
+  reason: String!
+  state: RefundState!
+  transactionId: String!
+  orderItems: [OrderItem!]!
+  payment: Payment!
+  paymentId: Float!
+  metadata: String!
+}
+
+enum RefundState {
+  SETTLED
+  PENDING
+  FAILED
+}
+
+type Payment {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  method: String!
+  amount: Float!
+  state: String!
+  errorMessage: String!
+  transactionId: String!
+  order: Order!
+  refunds: [Refund!]!
+}
+
+type Surcharge {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  taxLines: JSON!
+  description: String!
+  listPrice: Float!
+  listPriceIncludesTax: Boolean!
+  sku: String!
+  order: Order!
+  orderModification: OrderModification!
+}
+
+type OrderModification {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  note: String!
+  order: Order!
+  shippingAddressChange: JSON!
+  billingAddressChange: JSON!
+  orderItems: [OrderItem!]!
+  surcharges: [Surcharge!]!
+  priceChange: Float!
+  payment: Payment
+  refund: Refund
+}
+
+type ShippingMethod {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime!
+  code: String!
+  name: String!
+  description: String!
+  shippingLines: [ShippingLine!]!
+  fulfillmentHandlerCode: String!
+  channels: [Channel!]!
+}
+
+type ShippingLine {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  adjustments: JSON!
+  taxLines: JSON!
+  shippingMethodId: Float!
+  shippingMethod: ShippingMethod!
+  order: Order!
+  listPrice: Float!
+  listPriceIncludesTax: Boolean!
+}
+
+type Order {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  code: String!
+  state: OrderState!
+  active: Boolean!
+  orderPlacedAt: DateTime
+  totalCost: Float!
+  totalTax: Float!
+  totalQuantity: Float!
+  totalDiscount: Float!
+  user: User!
+  lines: OrderLine
+  shippingAddress: Address!
+  billingAddress: Address!
+  payments: Payment
+  currencyCode: CurrencyCode!
+  taxZoneId: Float
+  channels: [Channel!]!
+  modifications: OrderModification
+  shippingLines: ShippingLine
+  shipping: Float!
+  shippingWithTax: Float!
+}
+
+enum OrderState {
+  CREATED
+  ADDINGITEMS
+  ARRANGINGPAYMENT
+  PAYMENTSETTLED
+  PARTIALLYSHIPPED
+  PAYMENTAUTHORIZED
+  SHIPPED
+  PARTIALLYDELIVERED
+  DELIVERED
+  MODIFYING
+  ARRANGINGADDITIONALPAYMENT
+  CANCELLED
+}
+
+type Promotion {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime!
+  startsAt: DateTime!
+  endsAt: DateTime!
+  couponCode: String!
+  perCustomerUsageLimit: Float!
+  name: String!
+  enabled: Boolean!
+  channels: [Channel!]!
+}
+
+type Department {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  employees: [Employee!]!
+}
+
+type Employee {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  profile: Person!
+  department: Department!
+}
+
+type Store {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  address: Address!
+  manager: Employee!
+}
+
+type Sale {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  order: Order!
+  couponCodes: [String!]
+  customer: Customer!
+  promotions: Promotion
+  fromStore: Store!
+  surcharges: Surcharge
+  biller: Employee!
+}
+
+type Customer {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime!
+  person: Person
+  groups: [CustomerGroup!]
+  sales: [Sale!]
+  channels: [Channel!]!
+}
+
+type CustomerGroup {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  customers: [Customer!]
+}
+
+type Supplier {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  VATNumber: Float!
+  person: Person
+  productVariants: [ProductVariant!]!
+  purchases: [Purchase!]!
+}
+
+type Purchase {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  order: Order!
+  toStore: Store!
+  supplier: Supplier!
+}
+
+type StockAdjustment {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  productVariant: ProductVariant!
+  quantity: Float!
+  type: StockMovementType!
+  note: String!
+}
+
+type StoreStockLevel {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  store: Store!
+  quantity: Float!
+  variant: ProductVariant!
+}
+
+type Zone {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  members: [Country!]!
+}
+
+type CreateCountryOutput {
+  error: String
+  ok: Boolean!
+}
+
+type DeleteCountryOutput {
+  error: String
+  ok: Boolean!
+}
+
+type EditCountryOutput {
+  error: String
+  ok: Boolean!
+}
+
+type AllCountryOutput {
+  error: String
+  ok: Boolean!
+  countries: [Country!]
+}
+
+type FindCountryOutput {
+  error: String
+  ok: Boolean!
+  country: Country!
+}
+
+type CreateAddressOutput {
+  error: String
+  ok: Boolean!
+}
+
+type DeleteAddressOutput {
+  error: String
+  ok: Boolean!
+}
+
+type EditAddressOutput {
+  error: String
+  ok: Boolean!
+}
+
+type FindAddressOutput {
+  error: String
+  ok: Boolean!
+  address: Address!
+}
+
+type AllAddressOutput {
+  error: String
+  ok: Boolean!
+  addresses: [Address!]
+}
+
+type CreateAssetOutput {
+  error: String
+  ok: Boolean!
+}
+
+type DeleteAssetOutput {
+  error: String
+  ok: Boolean!
+}
+
+type EditAssetOutput {
+  error: String
+  ok: Boolean!
+}
+
+type FindAssetOutput {
+  error: String
+  ok: Boolean!
+  asset: Asset!
+}
+
+type MultipleUploadAssetOutput {
+  error: String
+  ok: Boolean!
+}
+
+type SingleUploadAssetOutput {
+  error: String
+  ok: Boolean!
+}
+
 type AllChannelOutput {
   error: String
   ok: Boolean!
@@ -464,136 +1001,276 @@ type FindChannelOutput {
   channel: Channel!
 }
 
-type Facet {
-  id: Float!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  name: String!
-  isPrivate: Boolean!
-  code: String!
-  values: [FacetValue!]
-}
-
-type FacetValue {
-  id: Float!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  name: String!
-  code: String!
-  facet: Facet!
-}
-
-type CollectionAsset {
-  id: Float!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  assetId: Float!
-  asset: Asset!
-  position: Float!
-  collectionId: Float!
-  collection: Collection!
-}
-
-type Collection {
-  id: Float!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  isRoot: Boolean!
-  position: Float!
-  isPrivate: Boolean!
-  name: String!
-  description: String!
-  slug: String!
-  featuredAsset: Asset!
-  assets: [CollectionAsset!]!
-  productVariants: [ProductVariant!]!
-  channels: [Channel!]!
-}
-
-type StockMovement {
-  id: Float!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  productVariant: ProductVariant!
-  quantity: Float!
-}
-
-type ProductVariantAsset {
-  id: Float!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  assetId: Float!
-  asset: Asset!
-  position: Float!
-  productVariantId: Float!
-  productVariant: ProductVariant!
-}
-
-type ProductVariantPrice {
-  id: Float!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  price: Float!
-  channelId: Float!
-  variant: ProductVariant!
-}
-
-type ProductVariant {
-  id: Float!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  name: String!
-  enabled: Boolean!
-  sku: String!
-  listPrice: Float!
-  listPriceIncludesTax: Boolean!
-  currencyCode: CurrencyCode!
-  featuredAsset: Asset!
-  assets: [ProductVariantAsset!]
-  productVariantPrices: [ProductVariantPrice!]!
-  product: Product!
-  productId: Float!
-  stockOnHand: Float!
-  stockAllocated: Float!
-  outOfStockThreshold: Float!
-  useGlobalOutOfStockThreshold: Boolean!
-  trackInventory: GlobalFlag!
-  stockMovements: [StockMovement!]
-  facetValues: [FacetValue!]
+type AllCollectionOutput {
+  error: String
+  ok: Boolean!
   collections: [Collection!]
-  channels: [Channel!]!
 }
 
-enum GlobalFlag {
-  TRUE
-  FALSE
-  INHERIT
+type CreateCollectionAssetOutput {
+  error: String
+  ok: Boolean!
 }
 
-type Product {
-  id: Float!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  name: String!
-  slug: String!
-  description: String!
-  enabled: Boolean!
-  featuredAsset: Asset
-  assets: [ProductAsset!]
-  variants: [ProductVariant!]
-  facetValues: [FacetValue!]
-  channels: [Channel!]
+type CreateCollectionOutput {
+  error: String
+  ok: Boolean!
 }
 
-type ProductAsset {
-  id: Float!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  assetId: Float!
-  asset: Asset!
-  position: Float!
-  productId: Float!
-  product: Product!
+type DeleteCollectionOutput {
+  error: String
+  ok: Boolean!
+}
+
+type DeleteCollectionAssetOutput {
+  error: String
+  ok: Boolean!
+}
+
+type EditCollectionAssetOutput {
+  error: String
+  ok: Boolean!
+}
+
+type EditCollectionOutput {
+  error: String
+  ok: Boolean!
+}
+
+type CreateCustomerGroupOutput {
+  error: String
+  ok: Boolean!
+}
+
+type CreateCustomerOutput {
+  error: String
+  ok: Boolean!
+}
+
+type DeleteCustomerGroupOutput {
+  error: String
+  ok: Boolean!
+}
+
+type DeleteCustomerOutput {
+  error: String
+  ok: Boolean!
+}
+
+type EditCustomerGroupOutput {
+  error: String
+  ok: Boolean!
+}
+
+type EditCustomerOutput {
+  error: String
+  ok: Boolean!
+}
+
+type AllCustomerGroupOutput {
+  error: String
+  ok: Boolean!
+  customerGroups: [CustomerGroup!]
+}
+
+type AllCustomerOutput {
+  error: String
+  ok: Boolean!
+  customers: [Customer!]
+}
+
+type FindCustomerGroupOutput {
+  error: String
+  ok: Boolean!
+  customerGroup: CustomerGroup
+}
+
+type FindCustomerOutput {
+  error: String
+  ok: Boolean!
+  customer: Customer!
+}
+
+type AllPersonOutput {
+  error: String
+  ok: Boolean!
+  people: [Person!]
+}
+
+type CreatePersonOutput {
+  error: String
+  ok: Boolean!
+  person: Person!
+}
+
+type DeletePersonOutput {
+  error: String
+  ok: Boolean!
+}
+
+type EditPersonOutput {
+  error: String
+  ok: Boolean!
+}
+
+type FindPersonOutput {
+  error: String
+  ok: Boolean!
+  person: Person!
+}
+
+type CreateDepartmentOutput {
+  error: String
+  ok: Boolean!
+}
+
+type CreateEmployeeOutput {
+  error: String
+  ok: Boolean!
+}
+
+type DeleteDepartmentOutput {
+  error: String
+  ok: Boolean!
+}
+
+type DeleteEmployeeOutput {
+  error: String
+  ok: Boolean!
+}
+
+type EditDepartmentOutput {
+  error: String
+  ok: Boolean!
+}
+
+type EditEmployeeOutput {
+  error: String
+  ok: Boolean!
+}
+
+type AllDepartmentOutput {
+  error: String
+  ok: Boolean!
+  departments: [Department!]
+}
+
+type AllEmployeeOutput {
+  error: String
+  ok: Boolean!
+  employees: [Employee!]
+}
+
+type FindDepartmentOutput {
+  error: String
+  ok: Boolean!
+  department: Department!
+}
+
+type FindEmployeeOutput {
+  error: String
+  ok: Boolean!
+  employee: Employee!
+}
+
+type AllFacetOutput {
+  error: String
+  ok: Boolean!
+  facets: [Facet!]
+}
+
+type CreateFacetValueOutput {
+  error: String
+  ok: Boolean!
+}
+
+type CreateFacetOutput {
+  error: String
+  ok: Boolean!
+}
+
+type DeleteFacetValueOutput {
+  error: String
+  ok: Boolean!
+}
+
+type DeleteFacetOutput {
+  error: String
+  ok: Boolean!
+}
+
+type EditFacetValueOutput {
+  error: String
+  ok: Boolean!
+}
+
+type EditFacetOutput {
+  error: String
+  ok: Boolean!
+}
+
+type CreateAccountOutput {
+  error: String
+  ok: Boolean!
+}
+
+type EditProfileOutput {
+  error: String
+  ok: Boolean!
+}
+
+type LoginOutput {
+  error: String
+  ok: Boolean!
+  token: String
+}
+
+type UserProfileOutput {
+  error: String
+  ok: Boolean!
+  user: User
+}
+
+type VerifyEmailOutput {
+  error: String
+  ok: Boolean!
+}
+
+type AllRoleOutput {
+  error: String
+  ok: Boolean!
+  roles: [Role!]
+}
+
+type CreatePermissionOutput {
+  error: String
+  ok: Boolean!
+}
+
+type CreateRoleOutput {
+  error: String
+  ok: Boolean!
+}
+
+type DeleteRoleOutput {
+  error: String
+  ok: Boolean!
+}
+
+type EditPermissionOutput {
+  error: String
+  ok: Boolean!
+}
+
+type EditRoleOutput {
+  error: String
+  ok: Boolean!
+}
+
+type FindRoleOutput {
+  error: String
+  ok: Boolean!
+  role: Role!
 }
 
 type CreateProductAssetOutput {
@@ -683,86 +1360,6 @@ type FindProductOutput {
   product: Product
 }
 
-type AllFacetOutput {
-  error: String
-  ok: Boolean!
-  facets: [Facet!]
-}
-
-type CreateFacetValueOutput {
-  error: String
-  ok: Boolean!
-}
-
-type CreateFacetOutput {
-  error: String
-  ok: Boolean!
-}
-
-type DeleteFacetValueOutput {
-  error: String
-  ok: Boolean!
-}
-
-type DeleteFacetOutput {
-  error: String
-  ok: Boolean!
-}
-
-type EditFacetValueOutput {
-  error: String
-  ok: Boolean!
-}
-
-type EditFacetOutput {
-  error: String
-  ok: Boolean!
-}
-
-type AllCollectionOutput {
-  error: String
-  ok: Boolean!
-  collections: [Collection!]
-}
-
-type CreateCollectionAssetOutput {
-  error: String
-  ok: Boolean!
-}
-
-type CreateCollectionOutput {
-  error: String
-  ok: Boolean!
-}
-
-type DeleteCollectionOutput {
-  error: String
-  ok: Boolean!
-}
-
-type DeleteCollectionAssetOutput {
-  error: String
-  ok: Boolean!
-}
-
-type EditCollectionAssetOutput {
-  error: String
-  ok: Boolean!
-}
-
-type EditCollectionOutput {
-  error: String
-  ok: Boolean!
-}
-
-type StockAdjustment {
-  id: Float!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  productVariant: ProductVariant!
-  quantity: Float!
-}
-
 type CreateStockAdjustmentOutput {
   error: String
   ok: Boolean!
@@ -784,15 +1381,403 @@ type FindStockAdjustmentOutput {
   stockAdjustment: StockAdjustment
 }
 
-input StockAdjustmentInputType {
-  productVariant: ProductVariantInputType!
-  quantity: Float!
+type CreateStoreStockLevelOutput {
+  error: String
+  ok: Boolean!
+}
+
+type CreateStoreOutput {
+  error: String
+  ok: Boolean!
+}
+
+type DeleteStoreStockLevelOutput {
+  error: String
+  ok: Boolean!
+}
+
+type DeleteStoreOutput {
+  error: String
+  ok: Boolean!
+}
+
+type EditStoreStockLevelOutput {
+  error: String
+  ok: Boolean!
+}
+
+type EditStoreOutput {
+  error: String
+  ok: Boolean!
+}
+
+type AllStoreStockLevelOutput {
+  error: String
+  ok: Boolean!
+  storeStockLevels: [StoreStockLevel!]
+}
+
+type AllStoreOutput {
+  error: String
+  ok: Boolean!
+  stores: [Store!]
+}
+
+type FindStoreStockLevelOutput {
+  error: String
+  ok: Boolean!
+  storeStockLevel: StoreStockLevel!
+}
+
+type FindStoreOutput {
+  error: String
+  ok: Boolean!
+  store: Store!
+}
+
+type CreateSupplierOutput {
+  error: String
+  ok: Boolean!
+}
+
+type DeleteSupplierOutput {
+  error: String
+  ok: Boolean!
+}
+
+type EditSupplierOutput {
+  error: String
+  ok: Boolean!
+}
+
+type AllSupplierOutput {
+  error: String
+  ok: Boolean!
+  suppliers: [Supplier!]
+}
+
+type FindSupplierOutput {
+  error: String
+  ok: Boolean!
+  supplier: Supplier!
+}
+
+input CountryInputType {
+  code: String!
+  enabled: String!
+}
+
+input AdressInputType {
+  person: PersonInputType!
+  fullName: String!
+  company: String!
+  streetLine1: String!
+  streetLine2: String!
+  city: String!
+  province: String!
+  postalCode: String!
+  country: CountryInputType!
+  phoneNumber: String!
+  defaultShippingAddress: Boolean!
+  defaultBillingAddress: Boolean!
+}
+
+input PersonInputType {
+  title: String!
+  firstName: String!
+  lastName: String!
+  phoneNumber: String!
+  emailAddress: String!
+  user: UserInputType
+  addresses: [AdressInputType!]
+  companyName: String!
+  taxNumber: String!
+}
+
+input UserInputType {
+  email: String!
+  password: String!
+  role: RoleInputType!
+  verified: Boolean!
+}
+
+input RoleInputType {
+  permissions: PermissionInputType
+  code: String!
+  name: String!
+  description: String!
+  channels: [ChannelInputType!]!
+}
+
+input PermissionInputType {
+  users: [AuthActions!]!
+  order: [AuthActions!]!
+  collection: [AuthActions!]!
+  people: [AuthActions!]!
+  role: [AuthActions!]!
+  product: [AuthActions!]!
+}
+
+input ChannelInputType {
+  name: String!
+  code: String!
+  token: String!
+  defaultLanguageCode: LanguageCode!
+  currencyCode: CurrencyCode!
+  pricesIncludeTax: Boolean!
+}
+
+type Query {
+  findAsset(assetId: Float!): FindAssetOutput!
+  allCollection: AllCollectionOutput!
+  allChannels: AllChannelOutput!
+  findChannel(channelId: Float!): FindChannelOutput!
+  allPersons: AllPersonOutput!
+  findPerson(personId: Float!): FindPersonOutput!
+  allFacets: AllFacetOutput!
+  me: User!
+  userProfile(userId: Float!): UserProfileOutput!
+  findRole(roleId: Float!): FindRoleOutput!
+  allRoles: AllRoleOutput!
+  findProduct(productId: Float!): FindProductOutput!
+  findAllProductVariant: AllProductVariantOutput!
+  findStockAdjustment(stockAdjustmentId: Float!): FindStockAdjustmentOutput!
+  findEmployee(employeeId: Float!): FindEmployeeOutput!
+  findAllEmployee: AllEmployeeOutput!
+  findDepartment(departmentId: Float!): FindDepartmentOutput!
+  findAllDepartment: AllDepartmentOutput!
+}
+
+type Mutation {
+  createAddress(input: CreateAddressInput!): CreateAddressOutput!
+  editAddress(input: EditAddressInput!): EditAddressOutput!
+  deleteAddress(addressId: Float!): DeleteAddressOutput!
+  findAddress(addressId: Float!): FindAddressOutput!
+  findAllAddress: AllAddressOutput!
+  createCountry(input: CreateCountryInput!): CreateCountryOutput!
+  editCountry(input: EditCountryInput!): EditCountryOutput!
+  deleteCountry(countryId: Float!): DeleteCountryOutput!
+  findCountry(countryId: Float!): FindCountryOutput!
+  findAllCountry: AllCountryOutput!
+  createAsset(input: CreateAssetInput!): CreateAssetOutput!
+  editAsset(input: EditAssetInput!): EditAssetOutput!
+  deleteAsset(assetId: Float!): DeleteAssetOutput!
+  singleAssetUpload(input: SingleUploadAssetInput!): SingleUploadAssetOutput!
+  multipleAssetUpload(input: MultipleUploadAssetInput!): MultipleUploadAssetOutput!
+  createCollection(input: CreateCollectionInput!): CreateCollectionOutput!
+  editCollection(input: EditCollectionInput!): EditCollectionOutput!
+  deleteCollection(collectionId: Float!): DeleteCollectionOutput!
+  createCollectionAsset(input: CreateCollectionAssetInput!): CreateCollectionAssetOutput!
+  editCollectionAsset(input: EditCollectionAssetInput!): EditCollectionAssetOutput!
+  deleteCollectionAsset(collectionAssetId: Float!): DeleteCollectionAssetOutput!
+  createChannel(input: CreateChannelInput!): CreateChannelOutput!
+  editChannel(input: EditChannelInput!): EditChannelOutput!
+  deleteChannel(channelId: Float!): DeleteChannelOutput!
+  createCustomer(input: CreateCustomerInput!): CreateCustomerOutput!
+  editCustomer(input: EditCustomerInput!): EditCustomerOutput!
+  deleteCustomer(customerId: Float!): DeleteCustomerOutput!
+  findCustomer(customerId: Float!): FindCustomerOutput!
+  findAllCustomer: AllCustomerOutput!
+  createGroupCustomer(input: CreateCustomerGroupInput!): CreateCustomerGroupOutput!
+  editCustomerGroup(input: EditCustomerGroupInput!): EditCustomerGroupOutput!
+  deleteCustomerGroup(customerGroupId: Float!): DeleteCustomerGroupOutput!
+  findCustomerGroup(customerGroupId: Float!): FindCustomerGroupOutput!
+  findAllCustomerGroup: AllCustomerGroupOutput!
+  createPerson(input: CreatePersonInput!): CreatePersonOutput!
+  editPerson(input: EditPersonInput!): EditPersonOutput!
+  deletePerson(personId: Float!): DeletePersonOutput!
+  createFacet(input: CreateFacetInput!): CreateFacetOutput!
+  editFacet(input: EditFacetInput!): EditFacetOutput!
+  deleteFacet(facetId: Float!): DeleteFacetOutput!
+  createFacetValue(input: CreateFacetValueInput!): CreateFacetValueOutput!
+  editFacetValue(input: EditFacetValueInput!): EditFacetValueOutput!
+  deleteFacetValue(facetId: Float!, facetValueId: Float!): DeleteFacetValueOutput!
+  createAccount(input: CreateAccountInput!): CreateAccountOutput!
+  login(input: LoginInput!): LoginOutput!
+  editProfile(input: EditProfileInput!): EditProfileOutput!
+  verifyEmail(input: VerifyEmailInput!): VerifyEmailOutput!
+  createRole(input: CreateRoleInput!): CreateRoleOutput!
+  editRole(input: EditRoleInput!): EditRoleOutput!
+  deleteRole(roleId: Float!): DeleteRoleOutput!
+  createPermission(input: CreatePermissionInput!): CreatePermissionOutput!
+  editPermission(input: EditPermissionInput!): EditPermissionOutput!
+  createProduct(input: CreateProductInput!): CreateProductOutput!
+  editProduct(input: EditProductInput!): EditProductOutput!
+  deleteProduct(productId: Float!): DeleteProductOutput!
+  createProductAsset(input: CreateProductAssetInput!): CreateProductAssetOutput!
+  editProductAsset(input: EditProductAssetInput!): EditProductAssetOutput!
+  deleteProductAsset(productAssetId: Float!): DeleteProductAssetOutput!
+  createProductVariantAsset(input: CreateProductVariantAssetInput!): CreateProductVariantAssetOutput!
+  editProductVariantAsset(input: EditProductVariantAssetInput!): EditProductVariantAssetOutput!
+  deleteProductVariantAsset(productVariantAssetId: Float!): DeleteProductVariantAssetOutput!
+  createProductVariantPrice(input: CreateProductVariantPriceInput!): CreateProductVariantPriceOutput!
+  editProductVariantPrice(input: EditProductVariantPriceInput!): EditProductVariantPriceOutput!
+  deleteProductVariantPrice(productVariantPriceId: Float!): DeleteProductVariantPriceOutput!
+  createProductVariant(input: CreateProductVariantInput!): CreateProductVariantOutput!
+  editProductVariant(input: EditProductVariantInput!): EditProductVariantOutput!
+  deleteProductVariant(productVariantId: Float!): DeleteProductVariantOutput!
+  createStockAdjustment(input: CreateStockAdjustmentInput!): CreateStockAdjustmentOutput!
+  editStockAdjustment(input: EditStockAdjustmentInput!): EditStockAdjustmentOutput!
+  deleteStockAdjustment(stockAdjustmentId: Float!): DeleteStockAdjustmentOutput!
+  createStore(input: CreateStoreInput!): CreateStoreOutput!
+  editStore(input: EditStoreInput!): EditStoreOutput!
+  deleteStore(storeId: Float!): DeleteStoreOutput!
+  findStore(storeId: Float!): FindStoreOutput!
+  findAllStore: AllStoreOutput!
+  createGroupStore(input: CreateStoreStockLevelInput!): CreateStoreStockLevelOutput!
+  editStoreStockLevel(input: EditStoreStockLevelInput!): EditStoreStockLevelOutput!
+  deleteStoreStockLevel(storeStockLevelId: Float!): DeleteStoreStockLevelOutput!
+  findStoreStockLevel(storeStockLevelId: Float!): FindStoreStockLevelOutput!
+  findAllStoreStockLevel: AllStoreStockLevelOutput!
+  createEmployee(input: CreateEmployeeInput!): CreateEmployeeOutput!
+  editEmployee(input: EditEmployeeInput!): EditEmployeeOutput!
+  deleteEmployee(employeeId: Float!): DeleteEmployeeOutput!
+  createGroupEmployee(input: CreateDepartmentInput!): CreateDepartmentOutput!
+  editDepartment(input: EditDepartmentInput!): EditDepartmentOutput!
+  deleteDepartment(departmentId: Float!): DeleteDepartmentOutput!
+  createSupplier(input: CreateSupplierInput!): CreateSupplierOutput!
+  editSupplier(input: EditSupplierInput!): EditSupplierOutput!
+  deleteSupplier(supplierId: Float!): DeleteSupplierOutput!
+  findSupplier(supplierId: Float!): FindSupplierOutput!
+  findAllSupplier: AllSupplierOutput!
+}
+
+input CreateAddressInput {
+  person: PersonInputType!
+  fullName: String!
+  company: String!
+  streetLine1: String!
+  streetLine2: String!
+  city: String!
+  province: String!
+  postalCode: String!
+  country: CountryInputType!
+  phoneNumber: String!
+  defaultShippingAddress: Boolean!
+  defaultBillingAddress: Boolean!
+  countryId: Float!
+}
+
+input EditAddressInput {
+  person: PersonInputType
+  fullName: String
+  company: String
+  streetLine1: String
+  streetLine2: String
+  city: String
+  province: String
+  postalCode: String
+  phoneNumber: String
+  defaultShippingAddress: Boolean
+  defaultBillingAddress: Boolean
+  addressId: Float!
+  countryId: Float!
+}
+
+input CreateCountryInput {
+  code: String!
+  enabled: String!
+}
+
+input EditCountryInput {
+  code: String
+  enabled: String
+  countryId: Float!
+}
+
+input CreateAssetInput {
+  name: String!
+  type: AssetType!
+  mimeType: String!
+  width: Float!
+  height: Float!
+  fileSize: Float!
+  source: String!
+  preview: String!
+}
+
+input EditAssetInput {
+  name: String
+  assetId: Float!
+}
+
+input SingleUploadAssetInput {
+  file: Upload!
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+input MultipleUploadAssetInput {
+  files: [Upload!]!
+}
+
+input CreateCollectionInput {
+  isRoot: Boolean!
+  position: Float!
+  isPrivate: Boolean!
+  name: String!
+  description: String!
+  slug: String!
+  parentId: Float!
+  featuredAssetId: Float!
+}
+
+input EditCollectionInput {
+  isRoot: Boolean
+  position: Float
+  isPrivate: Boolean
+  name: String
+  description: String
+  slug: String
+  parentId: Float!
+  featuredAssetId: Float!
+  collectionId: Float!
+}
+
+input CreateCollectionAssetInput {
+  assetId: Float!
+  asset: AssetInputType!
+  position: Float!
+  collectionId: Float!
+  collection: CollectionInputType!
+}
+
+input AssetInputType {
+  name: String!
+  type: AssetType!
+  mimeType: String!
+  width: Float!
+  height: Float!
+  fileSize: Float!
+  source: String!
+  preview: String!
+}
+
+input CollectionInputType {
+  isRoot: Boolean!
+  position: Float!
+  isPrivate: Boolean!
+  name: String!
+  description: String!
+  slug: String!
+  featuredAsset: AssetInputType!
+  assets: [CollectionAssetInputType!]!
+  productVariants: [ProductVariantInputType!]!
+  parent: CollectionInputType
+  channels: [ChannelInputType!]!
+  children: [CollectionInputType!]!
+}
+
+input CollectionAssetInputType {
+  collectionId: Float!
+  collection: CollectionInputType!
 }
 
 input ProductVariantInputType {
+  barcode: Float!
   name: String!
   enabled: Boolean!
-  sku: String!
   listPrice: Float!
   listPriceIncludesTax: Boolean!
   currencyCode: CurrencyCode!
@@ -810,17 +1795,7 @@ input ProductVariantInputType {
   facetValues: [FacetValueInputType!]
   collections: [CollectionInputType!]
   channels: [ChannelInputType!]!
-}
-
-input AssetInputType {
-  name: String!
-  type: AssetType!
-  mimeType: String!
-  width: Float!
-  height: Float!
-  fileSize: Float!
-  source: String!
-  preview: String!
+  deletedAt: DateTime!
 }
 
 input ProductVariantAssetInputType {
@@ -864,100 +1839,297 @@ input FacetInputType {
   values: [FacetValueInputType!]
 }
 
-input ChannelInputType {
+input StockMovementInputType {
+  productVariant: ProductVariantInputType!
+  quantity: Float!
+  type: StockMovementType!
+}
+
+input EditCollectionAssetInput {
+  assetId: Float
+  asset: AssetInputType
+  position: Float
+  collectionId: Float
+  collection: CollectionInputType
+  collectionAssetId: Float!
+}
+
+input CreateChannelInput {
   name: String!
   code: String!
-  token: String!
   defaultLanguageCode: LanguageCode!
   currencyCode: CurrencyCode!
   pricesIncludeTax: Boolean!
 }
 
-input StockMovementInputType {
-  productVariant: ProductVariantInputType!
-  quantity: Float!
+input EditChannelInput {
+  name: String
+  code: String
+  defaultLanguageCode: LanguageCode
+  currencyCode: CurrencyCode
+  pricesIncludeTax: Boolean
+  channelId: Float!
 }
 
-input CollectionInputType {
-  isRoot: Boolean!
-  position: Float!
-  isPrivate: Boolean!
+input CreateCustomerInput {
+  deletedAt: DateTime!
+  person: PersonInputType
+  channels: [ChannelInputType!]!
+  channelId: Float!
+  personId: Float!
+}
+
+input EditCustomerInput {
+  deletedAt: DateTime
+  channels: [ChannelInputType!]
+  customerId: Float!
+  channelId: Float!
+}
+
+input CreateCustomerGroupInput {
   name: String!
-  description: String!
-  slug: String!
-  featuredAsset: AssetInputType!
-  assets: [CollectionAssetInputType!]!
-  productVariants: [ProductVariantInputType!]!
+  customers: [CustomerInputType!]
+}
+
+input CustomerInputType {
+  deletedAt: DateTime!
+  person: PersonInputType
+  groups: [CustomerGroupInputType!]
+  sales: [SaleInputType!]
   channels: [ChannelInputType!]!
 }
 
-input CollectionAssetInputType {
-  collectionId: Float!
-  collection: CollectionInputType!
+input CustomerGroupInputType {
+  name: String!
+  customers: [CustomerInputType!]
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
-type Query {
-  me: User!
-  userProfile(userId: Float!): UserProfileOutput!
-  findProduct(productId: Float!): FindProductOutput!
-  findAllProductVariant: AllProductVariantOutput!
-  findAsset(assetId: Float!): FindAssetOutput!
-  allChannels: AllChannelOutput!
-  findChannel(channelId: Float!): FindChannelOutput!
-  allFacets: AllFacetOutput!
-  allCollection: AllCollectionOutput!
-  findStockAdjustment(stockAdjustmentId: Float!): FindStockAdjustmentOutput!
+input SaleInputType {
+  order: OrderInputType!
+  couponCodes: [String!]
+  customer: CustomerInputType!
+  promotions: PromotionInputType
+  fromStore: StoreInputType!
+  surcharges: SurchargeInputType
+  biller: EmployeeInputType!
 }
 
-type Mutation {
-  createAccount(input: CreateAccountInput!): CreateAccountOutput!
-  login(input: LoginInput!): LoginOutput!
-  editProfile(input: EditProfileInput!): EditProfileOutput!
-  verifyEmail(input: VerifyEmailInput!): VerifyEmailOutput!
-  createProduct(input: CreateProductInput!): CreateProductOutput!
-  editProduct(input: EditProductInput!): EditProductOutput!
-  deleteProduct(productId: Float!): DeleteProductOutput!
-  createProductAsset(input: CreateProductAssetInput!): CreateProductAssetOutput!
-  editProductAsset(input: EditProductAssetInput!): EditProductAssetOutput!
-  deleteProductAsset(productAssetId: Float!): DeleteProductAssetOutput!
-  createProductVariantAsset(input: CreateProductVariantAssetInput!): CreateProductVariantAssetOutput!
-  editProductVariantAsset(input: EditProductVariantAssetInput!): EditProductVariantAssetOutput!
-  deleteProductVariantAsset(productVariantAssetId: Float!): DeleteProductVariantAssetOutput!
-  createProductVariantPrice(input: CreateProductVariantPriceInput!): CreateProductVariantPriceOutput!
-  editProductVariantPrice(input: EditProductVariantPriceInput!): EditProductVariantPriceOutput!
-  deleteProductVariantPrice(productVariantPriceId: Float!): DeleteProductVariantPriceOutput!
-  createProductVariant(input: CreateProductVariantInput!): CreateProductVariantOutput!
-  editProductVariant(input: EditProductVariantInput!): EditProductVariantOutput!
-  deleteProductVariant(productVariantId: Float!): DeleteProductVariantOutput!
-  createAsset(input: CreateAssetInput!): CreateAssetOutput!
-  editAsset(input: EditAssetInput!): EditAssetOutput!
-  deleteAsset(assetId: Float!): DeleteAssetOutput!
-  singleAssetUpload(input: SingleUploadAssetInput!): SingleUploadAssetOutput!
-  multipleAssetUpload(input: MultipleUploadAssetInput!): MultipleUploadAssetOutput!
-  createChannel(input: CreateChannelInput!): CreateChannelOutput!
-  editChannel(input: EditChannelInput!): EditChannelOutput!
-  deleteChannel(channelId: Float!): DeleteChannelOutput!
-  createFacet(input: CreateFacetInput!): CreateFacetOutput!
-  editFacet(input: EditFacetInput!): EditFacetOutput!
-  deleteFacet(facetId: Float!): DeleteFacetOutput!
-  createFacetValue(input: CreateFacetValueInput!): CreateFacetValueOutput!
-  editFacetValue(input: EditFacetValueInput!): EditFacetValueOutput!
-  deleteFacetValue(facetId: Float!, facetValueId: Float!): DeleteFacetValueOutput!
-  createCollection(input: CreateCollectionInput!): CreateCollectionOutput!
-  editCollection(input: EditCollectionInput!): EditCollectionOutput!
-  deleteCollection(collectionId: Float!): DeleteCollectionOutput!
-  createCollectionAsset(input: CreateCollectionAssetInput!): CreateCollectionAssetOutput!
-  editCollectionAsset(input: EditCollectionAssetInput!): EditCollectionAssetOutput!
-  deleteCollectionAsset(collectionAssetId: Float!): DeleteCollectionAssetOutput!
-  createStockAdjustment(input: CreateStockAdjustmentInput!): CreateStockAdjustmentOutput!
-  editStockAdjustment(input: EditStockAdjustmentInput!): EditStockAdjustmentOutput!
-  deleteStockAdjustment(stockAdjustmentId: Float!): DeleteStockAdjustmentOutput!
+input OrderInputType {
+  code: String!
+  state: OrderState!
+  active: Boolean!
+  orderPlacedAt: DateTime
+  totalCost: Float!
+  totalTax: Float!
+  totalQuantity: Float!
+  totalDiscount: Float!
+  user: UserInputType!
+  lines: OrderLineInputType
+  shippingAddress: AdressInputType!
+  billingAddress: AdressInputType!
+  payments: PaymentInputType
+  currencyCode: CurrencyCode!
+  taxZoneId: Float
+  channels: [ChannelInputType!]!
+  modifications: OrderModificationInputType
+  shippingLines: ShippingLineInputType
+  shipping: Float!
+  shippingWithTax: Float!
+}
+
+input OrderLineInputType {
+  sku: String!
+  productVariant: ProductVariantInputType!
+  taxCategory: TaxCategoryInputTyoe!
+  featuredAsset: AssetInputType!
+  order: OrderInputType!
+  quantity: Float!
+  received: Float!
+  discount: Float!
+  tax: Float!
+  cost: Float!
+  total: Float!
+}
+
+input TaxCategoryInputTyoe {
+  name: String!
+}
+
+input PaymentInputType {
+  method: String!
+  amount: Float!
+  state: String!
+  errorMessage: String!
+  transactionId: String!
+  order: OrderInputType!
+  refunds: [RefundInputType!]!
+}
+
+input RefundInputType {
+  items: Float!
+  shipping: Float!
+  adjustment: Float!
+  total: Float!
+  method: String!
+  reason: String!
+  state: RefundState!
+  transactionId: String!
+  orderItems: [OrderItemInput!]!
+  payment: PaymentInputType!
+  paymentId: Float!
+  metadata: String!
+}
+
+input OrderItemInput {
+  adjustments: JSON!
+  taxLines: JSON!
+  fulfillments: [FullfilmentInputType!]!
+  listPrice: Float!
+  listPriceIncludesTax: Boolean!
+  refund: RefundInputType!
+  refundId: Float!
+  cancelled: Boolean!
+}
+
+input FullfilmentInputType {
+  state: String!
+  trackingCode: String!
+  method: String!
+  handlerCode: String!
+  orderItems: [OrderItemInput!]!
+}
+
+input OrderModificationInputType {
+  note: String!
+  order: OrderInputType!
+  shippingAddressChange: JSON!
+  billingAddressChange: JSON!
+  orderItems: [OrderItemInput!]!
+  surcharges: [SurchargeInputType!]!
+  priceChange: Float!
+  payment: PaymentInputType
+  refund: RefundInputType
+}
+
+input SurchargeInputType {
+  taxLines: JSON!
+  description: String!
+  listPrice: Float!
+  listPriceIncludesTax: Boolean!
+  sku: String!
+  order: OrderInputType!
+  orderModification: OrderModificationInputType!
+}
+
+input ShippingLineInputType {
+  adjustments: JSON!
+  taxLines: JSON!
+  shippingMethodId: Float!
+  shippingMethod: ShippingMethodInputType!
+  order: OrderInputType!
+  listPrice: Float!
+  listPriceIncludesTax: Boolean!
+}
+
+input ShippingMethodInputType {
+  deletedAt: DateTime!
+  code: String!
+  name: String!
+  description: String!
+  shippingLines: [ShippingLineInputType!]!
+  fulfillmentHandlerCode: String!
+  channels: [ChannelInputType!]!
+}
+
+input PromotionInputType {
+  deletedAt: DateTime!
+  startsAt: DateTime!
+  endsAt: DateTime!
+  couponCode: String!
+  perCustomerUsageLimit: Float!
+  name: String!
+  enabled: Boolean!
+  channels: [ChannelInputType!]!
+}
+
+input StoreInputType {
+  name: String!
+  address: AdressInputType!
+  manager: EmployeeInputType!
+}
+
+input EmployeeInputType {
+  profile: PersonInputType!
+  department: DepartmentInputType!
+}
+
+input DepartmentInputType {
+  name: String!
+  employees: [EmployeeInputType!]!
+}
+
+input EditCustomerGroupInput {
+  name: String
+  customers: [CustomerInputType!]
+  customerGroupId: Float!
+}
+
+input CreatePersonInput {
+  title: String!
+  firstName: String!
+  lastName: String!
+  phoneNumber: String!
+  emailAddress: String!
+  addresses: [AdressInputType!]
+  companyName: String!
+  taxNumber: String!
+}
+
+input EditPersonInput {
+  title: String
+  firstName: String
+  lastName: String
+  phoneNumber: String
+  emailAddress: String
+  addresses: [AdressInputType!]
+  companyName: String
+  taxNumber: String
+  personId: Float!
+}
+
+input CreateFacetInput {
+  name: String!
+  isPrivate: Boolean!
+  code: String!
+}
+
+input EditFacetInput {
+  name: String
+  isPrivate: Boolean
+  code: String
+  facetId: Float!
+}
+
+input CreateFacetValueInput {
+  name: String!
+  code: String!
+  facetId: Float!
+}
+
+input EditFacetValueInput {
+  name: String
+  code: String
+  facetId: Float!
+  facetValueId: Float!
 }
 
 input CreateAccountInput {
   email: String!
   password: String!
-  role: UserRole!
+  roleId: Float!
 }
 
 input LoginInput {
@@ -972,6 +2144,41 @@ input EditProfileInput {
 
 input VerifyEmailInput {
   code: String!
+}
+
+input CreateRoleInput {
+  code: String!
+  name: String!
+  description: String!
+}
+
+input EditRoleInput {
+  permissions: PermissionInputType
+  code: String
+  name: String
+  description: String
+  roleId: Float!
+  channelId: Float!
+}
+
+input CreatePermissionInput {
+  users: [AuthActions!]!
+  order: [AuthActions!]!
+  collection: [AuthActions!]!
+  people: [AuthActions!]!
+  role: [AuthActions!]!
+  product: [AuthActions!]!
+  roleId: Float!
+}
+
+input EditPermissionInput {
+  users: [AuthActions!]
+  order: [AuthActions!]
+  collection: [AuthActions!]
+  people: [AuthActions!]
+  role: [AuthActions!]
+  product: [AuthActions!]
+  permissionId: Float!
 }
 
 input CreateProductInput {
@@ -1043,9 +2250,9 @@ input EditProductVariantPriceInput {
 }
 
 input CreateProductVariantInput {
+  barcode: Float!
   name: String!
   enabled: Boolean!
-  sku: String!
   listPrice: Float!
   listPriceIncludesTax: Boolean!
   currencyCode: CurrencyCode!
@@ -1056,12 +2263,13 @@ input CreateProductVariantInput {
   outOfStockThreshold: Float!
   useGlobalOutOfStockThreshold: Boolean!
   trackInventory: GlobalFlag!
+  deletedAt: DateTime!
 }
 
 input EditProductVariantInput {
+  barcode: Float
   name: String
   enabled: Boolean
-  sku: String
   listPrice: Float
   listPriceIncludesTax: Boolean
   currencyCode: CurrencyCode
@@ -1074,128 +2282,73 @@ input EditProductVariantInput {
   useGlobalOutOfStockThreshold: Boolean
   trackInventory: GlobalFlag
   channels: [ChannelInputType!]
+  deletedAt: DateTime
   productVariantId: Float!
-}
-
-input CreateAssetInput {
-  name: String!
-  type: AssetType!
-  mimeType: String!
-  width: Float!
-  height: Float!
-  fileSize: Float!
-  source: String!
-  preview: String!
-}
-
-input EditAssetInput {
-  name: String
-  assetId: Float!
-}
-
-input SingleUploadAssetInput {
-  file: Upload!
-}
-
-"""The `Upload` scalar type represents a file upload."""
-scalar Upload
-
-input MultipleUploadAssetInput {
-  files: [Upload!]!
-}
-
-input CreateChannelInput {
-  name: String!
-  code: String!
-  defaultLanguageCode: LanguageCode!
-  currencyCode: CurrencyCode!
-  pricesIncludeTax: Boolean!
-}
-
-input EditChannelInput {
-  name: String
-  code: String
-  defaultLanguageCode: LanguageCode
-  currencyCode: CurrencyCode
-  pricesIncludeTax: Boolean
-  channelId: Float!
-}
-
-input CreateFacetInput {
-  name: String!
-  isPrivate: Boolean!
-  code: String!
-}
-
-input EditFacetInput {
-  name: String
-  isPrivate: Boolean
-  code: String
-  facetId: Float!
-}
-
-input CreateFacetValueInput {
-  name: String!
-  code: String!
-  facetId: Float!
-}
-
-input EditFacetValueInput {
-  name: String
-  code: String
-  facetId: Float!
-  facetValueId: Float!
-}
-
-input CreateCollectionInput {
-  isRoot: Boolean!
-  position: Float!
-  isPrivate: Boolean!
-  name: String!
-  description: String!
-  slug: String!
-  parentId: Float!
-  featuredAssetId: Float!
-}
-
-input EditCollectionInput {
-  isRoot: Boolean
-  position: Float
-  isPrivate: Boolean
-  name: String
-  description: String
-  slug: String
-  parentId: Float!
-  featuredAssetId: Float!
-  collectionId: Float!
-}
-
-input CreateCollectionAssetInput {
-  assetId: Float!
-  asset: AssetInputType!
-  position: Float!
-  collectionId: Float!
-  collection: CollectionInputType!
-}
-
-input EditCollectionAssetInput {
-  assetId: Float
-  asset: AssetInputType
-  position: Float
-  collectionId: Float
-  collection: CollectionInputType
-  collectionAssetId: Float!
 }
 
 input CreateStockAdjustmentInput {
   productVariant: ProductVariantInputType!
   quantity: Float!
+  note: String!
   productVariantId: Float!
 }
 
 input EditStockAdjustmentInput {
   productVariant: ProductVariantInputType
   quantity: Float
+  note: String
   productVariantId: Float!
   stockAdjustmentId: Float!
+}
+
+input CreateStoreInput {
+  name: String!
+  employeeId: Float!
+}
+
+input EditStoreInput {
+  name: String
+  employeeId: Float!
+  storeId: Float!
+}
+
+input CreateStoreStockLevelInput {
+  quantity: Float!
+  storeId: Float!
+}
+
+input EditStoreStockLevelInput {
+  quantity: Float
+  storeStockLevelId: Float!
+  storeId: Float!
+  variantId: Float!
+}
+
+input CreateEmployeeInput {
+  departmentId: Float!
+  personId: Float!
+}
+
+input EditEmployeeInput {
+  employeeId: Float!
+  departmentId: Float!
+}
+
+input CreateDepartmentInput {
+  name: String!
+  employees: [EmployeeInputType!]!
+}
+
+input EditDepartmentInput {
+  name: String
+  employees: [EmployeeInputType!]
+  departmentId: Float!
+}
+
+input CreateSupplierInput {
+  personId: Float!
+}
+
+input EditSupplierInput {
+  supplierId: Float!
 }
